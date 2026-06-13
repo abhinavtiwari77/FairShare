@@ -170,7 +170,7 @@ export default function ExpenseForm({ groupId, members, initialData, onSuccess, 
           />
         </div>
         <div className="space-y-2">
-          <Label>Amount ($)</Label>
+          <Label>Amount (₹)</Label>
           <Input 
             type="number" step="0.01" min="0.01" required 
             value={amount} onChange={e => setAmount(e.target.value)} 
@@ -244,7 +244,7 @@ export default function ExpenseForm({ groupId, members, initialData, onSuccess, 
                     type="number"
                     step={splitType === 'SHARE' ? '1' : '0.01'}
                     min="0"
-                    placeholder={splitType === 'PERCENTAGE' ? '%' : splitType === 'SHARE' ? 'shares' : '$'}
+                    placeholder={splitType === 'PERCENTAGE' ? '%' : splitType === 'SHARE' ? 'shares' : '₹'}
                     className="w-24 h-8 px-2 text-sm text-right"
                     value={p.value}
                     onChange={e => updateParticipantValue(p.userId, e.target.value)}

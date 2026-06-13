@@ -44,7 +44,7 @@ export default function GroupBalances({ groupId }) {
                     <span className="font-medium text-foreground">{debt.creditor.fullName}</span>
                   </div>
                   <div className="font-semibold text-positive">
-                    ${debt.amount.toFixed(2)}
+                    ₹{debt.amount.toFixed(2)}
                   </div>
                 </li>
               ))}
@@ -63,7 +63,7 @@ export default function GroupBalances({ groupId }) {
               <li key={idx} className="flex justify-between items-center p-2 rounded-md hover:bg-muted/20 transition-colors">
                 <span className="text-sm font-medium text-foreground">{mb.user.fullName}</span>
                 <span className={`font-semibold ${mb.balance > 0 ? 'text-positive' : mb.balance < 0 ? 'text-destructive' : 'text-muted-foreground'}`}>
-                  {mb.balance > 0 ? '+' : ''}${mb.balance.toFixed(2)}
+                  {mb.balance > 0 ? '+' : ''}₹{mb.balance.toFixed(2)}
                 </span>
               </li>
             ))}

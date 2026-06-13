@@ -76,7 +76,7 @@ export default function RecordSettlementModal({ groupId, onClose, onSettlementCr
     }
 
     if (numAmount > maxAmount + 0.001) {
-      setError(`Cannot settle more than the owed amount ($${maxAmount.toFixed(2)})`);
+      setError(`Cannot settle more than the owed amount (₹${maxAmount.toFixed(2)})`);
       return;
     }
 
@@ -119,7 +119,7 @@ export default function RecordSettlementModal({ groupId, onClose, onSettlementCr
               <option value="">Select person...</option>
               {pairwiseDebts.map(debt => (
                 <option key={debt.creditorId} value={debt.creditorId}>
-                  {debt.creditor.fullName} (You owe ${debt.amount.toFixed(2)})
+                  {debt.creditor.fullName} (You owe ₹{debt.amount.toFixed(2)})
                 </option>
               ))}
             </select>
@@ -129,7 +129,7 @@ export default function RecordSettlementModal({ groupId, onClose, onSettlementCr
           </div>
 
           <div className="space-y-2">
-            <Label>Amount ($)</Label>
+            <Label>Amount (₹)</Label>
             <Input
               type="number"
               step="0.01"

@@ -98,7 +98,7 @@ export default function Dashboard() {
               {isLoading ? (
                 <div className="h-8 w-24 animate-pulse rounded-md bg-muted"></div>
               ) : (
-                <div className="text-2xl font-bold text-destructive">${balances?.totalOwe?.toFixed(2) || '0.00'}</div>
+                <div className="text-2xl font-bold text-destructive">₹{balances?.totalOwe?.toFixed(2) || '0.00'}</div>
               )}
             </CardContent>
           </Card>
@@ -112,7 +112,7 @@ export default function Dashboard() {
               {isLoading ? (
                 <div className="h-8 w-24 animate-pulse rounded-md bg-muted"></div>
               ) : (
-                <div className="text-2xl font-bold text-positive">${balances?.totalOwed?.toFixed(2) || '0.00'}</div>
+                <div className="text-2xl font-bold text-positive">₹{balances?.totalOwed?.toFixed(2) || '0.00'}</div>
               )}
             </CardContent>
           </Card>
@@ -127,7 +127,7 @@ export default function Dashboard() {
                 <div className="h-8 w-24 animate-pulse rounded-md bg-muted"></div>
               ) : (
                 <div className={`text-2xl font-bold ${balances?.netBalance > 0 ? 'text-positive' : balances?.netBalance < 0 ? 'text-destructive' : 'text-foreground'}`}>
-                  {balances?.netBalance > 0 ? '+' : ''}${balances?.netBalance?.toFixed(2) || '0.00'}
+                  {balances?.netBalance > 0 ? '+' : ''}₹{balances?.netBalance?.toFixed(2) || '0.00'}
                 </div>
               )}
             </CardContent>

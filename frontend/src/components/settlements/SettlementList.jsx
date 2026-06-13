@@ -73,7 +73,7 @@ export default function SettlementList({ groupId }) {
               </p>
             </div>
             <div className="flex items-center gap-4">
-              <span className="font-bold text-positive text-sm">${Number(s.amount).toFixed(2)}</span>
+              <span className="font-bold text-positive text-sm">₹{Number(s.amount).toFixed(2)}</span>
               {canDelete && (
                 <Button 
                   variant="ghost" 

@@ -83,7 +83,7 @@ export default function ExpenseList({ groupId }) {
                 )}
               </div>
               <div className="text-right">
-                <div className="text-sm font-bold text-foreground">${Number(expense.amount).toFixed(2)}</div>
+                <div className="text-sm font-bold text-foreground">₹{Number(expense.amount).toFixed(2)}</div>
                 <div className="text-[10px] text-muted-foreground mt-1 uppercase font-medium tracking-wider">{expense.splitType}</div>
               </div>
             </div>

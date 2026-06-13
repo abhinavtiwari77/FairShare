@@ -136,7 +136,7 @@ export default function ExpenseDetails() {
                     )}
                   </div>
                   <div className="text-left md:text-right">
-                    <div className="text-3xl font-black">${Number(expense.amount).toFixed(2)}</div>
+                    <div className="text-3xl font-black">₹{Number(expense.amount).toFixed(2)}</div>
                     <div className="text-sm text-muted-foreground mt-1">Paid by <span className="font-medium text-foreground">{payer.fullName}</span></div>
                   </div>
                 </div>
@@ -174,7 +174,7 @@ export default function ExpenseDetails() {
                               </p>
                               {participant?.splitValue !== null && expense.splitType !== 'EQUAL' && (
                                 <p className="text-xs text-muted-foreground">
-                                  {Number(participant.splitValue)} {expense.splitType === 'PERCENTAGE' ? '%' : expense.splitType === 'SHARE' ? 'shares' : '$'}
+                                  {Number(participant.splitValue)} {expense.splitType === 'PERCENTAGE' ? '%' : expense.splitType === 'SHARE' ? 'shares' : '₹'}
                                 </p>
                               )}
                             </div>
