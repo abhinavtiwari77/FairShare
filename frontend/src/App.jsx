@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import GroupDetails from './pages/GroupDetails';
+import ExpenseDetails from './pages/ExpenseDetails';
 
 function App() {
   return (
@@ -27,6 +28,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <GroupDetails />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/groups/:groupId/expenses/:expenseId" 
+            element={
+              <ProtectedRoute>
+                <ExpenseDetails />
               </ProtectedRoute>
             } 
           />

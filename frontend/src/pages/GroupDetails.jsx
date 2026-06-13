@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import api from '../lib/api';
+import ExpenseList from '../components/expenses/ExpenseList';
+import ExpenseForm from '../components/expenses/ExpenseForm';
 
 export default function GroupDetails() {
   const { id } = useParams();
@@ -9,6 +11,7 @@ export default function GroupDetails() {
   const { user } = useAuth();
   
   const [data, setData] = useState(null);
+  const [showAddExpense, setShowAddExpense] = useState(false);
   const [loading, setLoading] = useState(true);
   const [searchEmail, setSearchEmail] = useState('');
   const [searchResult, setSearchResult] = useState(null);
@@ -125,6 +128,37 @@ export default function GroupDetails() {
           </div>
         </div>
 
+        {/* Expenses Section */}
+        <div className="mt-6 rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold">Expenses</h2>
+            <button 
+              onClick={() => setShowAddExpense(true)}
+              className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-sm font-medium transition-colors"
+            >
+              Add Expense
+            </button>
+          </div>
+          
+          {showAddExpense ? (
+            <div className="bg-zinc-50 p-6 rounded-lg border border-zinc-200 mb-6 dark:bg-zinc-800 dark:border-zinc-700">
+              <h3 className="text-lg font-bold mb-4">Add New Expense</h3>
+              <ExpenseForm 
+                groupId={id}
+                members={members}
+                onSuccess={() => {
+                  setShowAddExpense(false);
+                  window.location.reload(); 
+                }}
+                onCancel={() => setShowAddExpense(false)}
+              />
+            </div>
+          ) : (
+            <ExpenseList groupId={id} />
+          )}
+        </div>
+
+        {/* Members Section */}
         <div className="mt-4 rounded-lg border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-900">
           <h2 className="text-xl font-bold mb-4">Members</h2>
           
