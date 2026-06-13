@@ -1,12 +1,30 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { Plus, Users, ArrowUpRight, ArrowDownRight, Scale, AlertCircle } from 'lucide-react';
+import { Plus, Users, ArrowUpRight, ArrowDownRight, Scale, AlertCircle, Plane, Home, Utensils, ShoppingCart } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/api';
 import CreateGroupModal from '../components/CreateGroupModal';
 import { Button } from '../components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '../components/ui/Card';
+
+const getGroupAvatar = (name) => {
+  const lowerName = name.toLowerCase();
+  if (lowerName.includes('trip')) return <Plane className="w-6 h-6 text-blue-500" />;
+  if (lowerName.includes('home')) return <Home className="w-6 h-6 text-emerald-500" />;
+  if (lowerName.includes('food')) return <Utensils className="w-6 h-6 text-orange-500" />;
+  if (lowerName.includes('shopping')) return <ShoppingCart className="w-6 h-6 text-purple-500" />;
+  
+  const initials = name
+    .split(' ')
+    .filter(word => word.length > 0)
+    .map(word => word[0])
+    .join('')
+    .substring(0, 2)
+    .toUpperCase();
+    
+  return <span className="text-lg font-bold text-muted-foreground">{initials}</span>;
+};
 
 export default function Dashboard() {
   const { user } = useAuth();
@@ -147,16 +165,21 @@ export default function Dashboard() {
                   onMouseEnter={() => handlePrefetchGroup(group.id)}
                   className="block transition-all hover:-translate-y-1"
                 >
-                  <Card className="h-full hover:border-primary/50 hover:shadow-md transition-all duration-200">
-                    <CardHeader>
-                      <CardTitle className="text-lg">{group.name}</CardTitle>
-                      <CardDescription className="line-clamp-2 mt-1">{group.description || 'No description'}</CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="flex items-center text-xs font-medium text-muted-foreground">
-                        <Users className="w-3 h-3 mr-1.5" />
-                        {group._count?.members} Members
+                  <Card className="h-full flex flex-col justify-between hover:border-primary/50 hover:shadow-md transition-all duration-200 cursor-pointer">
+                    <div className="p-6 pb-4 flex items-start gap-4">
+                      <div className="w-14 h-14 rounded-xl bg-muted/50 flex items-center justify-center flex-shrink-0 border border-muted-foreground/10">
+                        {getGroupAvatar(group.name)}
                       </div>
+                      <div className="space-y-1">
+                        <h3 className="text-lg font-bold tracking-tight leading-tight">{group.name}</h3>
+                        <p className="text-sm text-muted-foreground line-clamp-2 leading-snug">
+                          {group.description || 'No description provided'}
+                        </p>
+                      </div>
+                    </div>
+                    <CardContent className="pt-0 pb-6 flex items-center text-xs font-medium text-muted-foreground">
+                      <Users className="w-4 h-4 mr-1.5" />
+                      {group._count?.members} Members
                     </CardContent>
                   </Card>
                 </Link>
