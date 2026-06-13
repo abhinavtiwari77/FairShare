@@ -62,15 +62,50 @@ export default function ExpenseChat({ expenseId, isAdmin }) {
 
   const sendMutation = useMutation({
     mutationFn: async (text) => api.post(`/api/v1/expenses/${expenseId}/messages`, { text }),
-    onSuccess: () => {
+    onMutate: async (text) => {
+      await queryClient.cancelQueries({ queryKey: ['messages', expenseId] });
+      const previousMessages = queryClient.getQueryData(['messages', expenseId]);
+      
+      const optimisticMessage = {
+        id: `temp-${Date.now()}`,
+        text,
+        createdAt: new Date().toISOString(),
+        sender: user
+      };
+
+      queryClient.setQueryData(['messages', expenseId], (oldData) => {
+        if (!oldData) return [optimisticMessage];
+        return [...oldData, optimisticMessage];
+      });
+
       setNewMessage('');
+      
+      return { previousMessages };
     },
-    onError: (err) => setError(err.response?.data?.error || 'Failed to send message')
+    onError: (err, newText, context) => {
+      queryClient.setQueryData(['messages', expenseId], context.previousMessages);
+      setError(err.response?.data?.error || 'Failed to send message');
+      setNewMessage(newText);
+    }
   });
 
   const deleteMutation = useMutation({
     mutationFn: async (messageId) => api.delete(`/api/v1/expenses/${expenseId}/messages/${messageId}`),
-    onError: (err) => setError(err.response?.data?.error || 'Failed to delete message')
+    onMutate: async (messageId) => {
+      await queryClient.cancelQueries({ queryKey: ['messages', expenseId] });
+      const previousMessages = queryClient.getQueryData(['messages', expenseId]);
+
+      queryClient.setQueryData(['messages', expenseId], (oldData) => {
+        if (!oldData) return [];
+        return oldData.filter(m => m.id !== messageId);
+      });
+
+      return { previousMessages };
+    },
+    onError: (err, messageId, context) => {
+      queryClient.setQueryData(['messages', expenseId], context.previousMessages);
+      setError(err.response?.data?.error || 'Failed to delete message');
+    }
   });
 
   const handleSendMessage = (e) => {

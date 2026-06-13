@@ -27,15 +27,38 @@ export default function RecordSettlementModal({ groupId, onClose, onSettlementCr
 
   const settlementMutation = useMutation({
     mutationFn: async (data) => api.post(`/api/v1/groups/${groupId}/settlements`, data),
-    onSuccess: () => {
+    onMutate: async (data) => {
+      await queryClient.cancelQueries({ queryKey: ['settlements', groupId] });
+      const previousSettlements = queryClient.getQueryData(['settlements', groupId]);
+
+      const optimisticSettlement = {
+        id: `temp-${Date.now()}`,
+        amount: data.amount,
+        note: data.note,
+        createdAt: new Date().toISOString(),
+        status: 'COMPLETED',
+        payer: { fullName: 'You' },
+        receiver: { fullName: 'Receiver' } // Best effort optimisim
+      };
+
+      queryClient.setQueryData(['settlements', groupId], (old) => {
+        if (!old) return [optimisticSettlement];
+        return [optimisticSettlement, ...old];
+      });
+
+      onClose(); // Optimistically close the modal immediately
+      
+      return { previousSettlements };
+    },
+    onError: (err, variables, context) => {
+      queryClient.setQueryData(['settlements', groupId], context.previousSettlements);
+      alert(err.response?.data?.error || 'Failed to record settlement');
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['balances', groupId] });
       queryClient.invalidateQueries({ queryKey: ['balances', 'user'] });
       queryClient.invalidateQueries({ queryKey: ['settlements', groupId] });
       onSettlementCreated();
-      onClose();
-    },
-    onError: (err) => {
-      setError(err.response?.data?.error || 'Failed to record settlement');
     }
   });
 

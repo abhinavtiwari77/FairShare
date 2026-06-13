@@ -30,14 +30,35 @@ export default function ExpenseDetails() {
 
   const deleteMutation = useMutation({
     mutationFn: async () => api.delete(`/api/v1/expenses/${expenseId}`),
-    onSuccess: () => {
+    onMutate: async () => {
+      await queryClient.cancelQueries({ queryKey: ['expenses', groupId] });
+      const previousExpenses = queryClient.getQueryData(['expenses', groupId]);
+
+      queryClient.setQueryData(['expenses', groupId], (old) => {
+        if (!old) return old;
+        const newPages = [...old.pages];
+        for (let i = 0; i < newPages.length; i++) {
+          newPages[i] = {
+            ...newPages[i],
+            expenses: newPages[i].expenses.filter(e => e.id !== expenseId)
+          };
+        }
+        return { ...old, pages: newPages };
+      });
+      
+      // Navigate immediately for optimistic UI feel
+      navigate(`/groups/${groupId}`);
+      
+      return { previousExpenses };
+    },
+    onError: (err, variables, context) => {
+      queryClient.setQueryData(['expenses', groupId], context.previousExpenses);
+      alert(err.response?.data?.error || 'Failed to delete expense');
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['expenses', groupId] });
       queryClient.invalidateQueries({ queryKey: ['balances', groupId] });
       queryClient.invalidateQueries({ queryKey: ['balances', 'user'] });
-      navigate(`/groups/${groupId}`);
-    },
-    onError: (err) => {
-      alert(err.response?.data?.error || 'Failed to delete expense');
     }
   });
 

@@ -63,17 +63,54 @@ export default function ExpenseForm({ groupId, members, initialData, onSuccess, 
         await api.post(`/api/v1/groups/${groupId}/expenses`, payload);
       }
     },
-    onSuccess: () => {
+    onMutate: async (payload) => {
+      await queryClient.cancelQueries({ queryKey: ['expenses', groupId] });
+      const previousExpenses = queryClient.getQueryData(['expenses', groupId]);
+      
+      const optimisticExpense = {
+        id: isEdit ? initialData.id : `temp-${Date.now()}`,
+        ...payload,
+        paidBy: members.find(m => m.user.id === payload.paidById)?.user || { fullName: 'Unknown' },
+        createdAt: isEdit ? initialData.createdAt : new Date().toISOString(),
+      };
+
+      queryClient.setQueryData(['expenses', groupId], (old) => {
+        if (!old) return old;
+        const newPages = [...old.pages];
+        if (newPages.length > 0) {
+          if (isEdit) {
+            for (let i = 0; i < newPages.length; i++) {
+              newPages[i] = {
+                ...newPages[i],
+                expenses: newPages[i].expenses.map(e => e.id === initialData.id ? optimisticExpense : e)
+              };
+            }
+          } else {
+            newPages[0] = {
+              ...newPages[0],
+              expenses: [optimisticExpense, ...newPages[0].expenses]
+            };
+          }
+        }
+        return { ...old, pages: newPages };
+      });
+      
+      return { previousExpenses };
+    },
+    onError: (err, newExpense, context) => {
+      queryClient.setQueryData(['expenses', groupId], context.previousExpenses);
+      setError(err.response?.data?.error || 'Failed to save expense');
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['expenses', groupId] });
       queryClient.invalidateQueries({ queryKey: ['balances', groupId] });
       queryClient.invalidateQueries({ queryKey: ['balances', 'user'] });
       if (isEdit) {
         queryClient.invalidateQueries({ queryKey: ['expense', initialData.id] });
       }
-      onSuccess();
     },
-    onError: (err) => {
-      setError(err.response?.data?.error || 'Failed to save expense');
+    onSuccess: () => {
+      onSuccess();
     }
   });
 

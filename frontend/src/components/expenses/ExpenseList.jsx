@@ -1,9 +1,11 @@
 import { Link } from 'react-router-dom';
-import { useInfiniteQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, keepPreviousData, useQueryClient } from '@tanstack/react-query';
 import api from '../../lib/api';
 import { Button } from '../ui/Button';
 
 export default function ExpenseList({ groupId }) {
+  const queryClient = useQueryClient();
+
   const {
     data,
     fetchNextPage,
@@ -24,7 +26,19 @@ export default function ExpenseList({ groupId }) {
       }
       return undefined;
     },
+    placeholderData: keepPreviousData,
   });
+
+  const handlePrefetch = (expenseId) => {
+    queryClient.prefetchQuery({
+      queryKey: ['expense', expenseId],
+      queryFn: async () => {
+        const res = await api.get(`/api/v1/groups/${groupId}/expenses/${expenseId}`);
+        return res.data;
+      },
+      staleTime: 5 * 60 * 1000,
+    });
+  };
 
   if (isLoading) {
     return (
@@ -53,6 +67,7 @@ export default function ExpenseList({ groupId }) {
           <Link 
             key={expense.id} 
             to={`/groups/${groupId}/expenses/${expense.id}`}
+            onMouseEnter={() => handlePrefetch(expense.id)}
             className="block p-4 hover:bg-muted/30 transition-colors"
           >
             <div className="flex justify-between items-start gap-4">

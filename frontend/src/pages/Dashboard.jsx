@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { Plus, Users, LogOut, ArrowUpRight, ArrowDownRight, Scale, AlertCircle } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/api';
 import CreateGroupModal from '../components/CreateGroupModal';
 import { Button } from '../components/ui/Button';
@@ -11,7 +11,19 @@ import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '../co
 export default function Dashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const handlePrefetchGroup = (groupId) => {
+    queryClient.prefetchQuery({
+      queryKey: ['group', groupId],
+      queryFn: async () => {
+        const res = await api.get(`/api/v1/groups/${groupId}`);
+        return res.data;
+      },
+      staleTime: 5 * 60 * 1000,
+    });
+  };
 
   const { data: groups = [], isLoading: groupsLoading, isError: groupsError, refetch: refetchGroups } = useQuery({
     queryKey: ['groups'],
@@ -135,8 +147,13 @@ export default function Dashboard() {
           ) : (
             <div className="grid gap-6 sm:grid-cols-2 md:grid-cols-3">
               {groups.map(group => (
-                <Link key={group.id} to={`/groups/${group.id}`} className="block transition-all hover:-translate-y-1">
-                  <Card className="h-full hover:border-primary/50 hover:shadow-md transition-all">
+                <Link 
+                  key={group.id} 
+                  to={`/groups/${group.id}`} 
+                  onMouseEnter={() => handlePrefetchGroup(group.id)}
+                  className="block transition-all hover:-translate-y-1"
+                >
+                  <Card className="h-full hover:border-primary/50 hover:shadow-md transition-all duration-200">
                     <CardHeader>
                       <CardTitle className="text-lg">{group.name}</CardTitle>
                       <CardDescription className="line-clamp-2 mt-1">{group.description || 'No description'}</CardDescription>
