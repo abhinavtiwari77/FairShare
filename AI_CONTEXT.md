@@ -1,6 +1,6 @@
 # AI_CONTEXT.md — FairShare MVP (Source of Truth)
 
-> **Status:** Phase 1 complete — ready for Phase 2 (Groups)  
+> **Status:** Phase 2 complete — ready for Phase 3 (Expenses)  
 > **Last updated:** 2026-06-13  
 > **App name:** FairShare  
 > **Tagline:** Track shared expenses and settle up easily.
@@ -15,7 +15,7 @@
 | **Assignment** | Reverse engineer Splitwise, scope a realistic MVP, build and deploy an application |
 | **Reference product** | [Splitwise](https://www.splitwise.com/) |
 | **Product name** | **FairShare** |
-| **Current phase** | Phase 1 complete → Phase 2 (Groups) |
+| **Current phase** | Phase 2 complete → Phase 3 (Expenses) |
 | **Implementation** | Phase 0 scaffold deployed locally |
 | **Team** | Solo developer |
 | **Budget** | Free-tier services only |
@@ -138,7 +138,7 @@ OAuth, email verification, password reset, email invitations, join links, paymen
 ### 3.4 Final MVP feature checklist
 
 - [x] Authentication (Verified with QA pass)
-- [ ] Group management
+- [x] Group management (Verified with QA pass)
 - [x] Member management
 - [x] Expense management
 - [x] Equal / Unequal / Percentage / Share splits

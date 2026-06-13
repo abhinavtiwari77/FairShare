@@ -1,6 +1,6 @@
 # BUILD_PLAN.md — FairShare MVP
 
-> **Status:** Phase 1 complete — Phase 2 next  
+> **Status:** Phase 2 complete — Phase 3 next  
 > **Source of truth:** [AI_CONTEXT.md](./AI_CONTEXT.md)  
 > **Created:** 2026-06-13
 
@@ -77,14 +77,14 @@ This plan implements **FairShare** — a Splitwise-style expense sharing web app
 
 ### Tasks
 
-- [ ] Group CRUD API (create, list, get, update, archive)
-- [ ] Member management API (add by email, remove, leave, promote role)
-- [ ] Enforce admin permissions and sole-admin leave block
-- [ ] Frontend: Dashboard page (group list, active vs archived toggle)
-- [ ] Frontend: Create group page
-- [ ] Frontend: Group detail page shell (tabs: expenses, balances, members, settlements)
-- [ ] Frontend: Member management UI (add by email search, remove, promote)
-- [ ] TanStack Query hooks for groups
+- [x] Group CRUD API (create, list, get, update, archive)
+- [x] Member management API (add by email, remove, leave, promote role)
+- [x] Enforce admin permissions and sole-admin leave block
+- [x] Frontend: Dashboard page (group list, active vs archived toggle)
+- [x] Frontend: Create group page
+- [x] Frontend: Group detail page shell (tabs: expenses, balances, members, settlements)
+- [x] Frontend: Member management UI (add by email search, remove, promote)
+- [x] TanStack Query hooks for groups
 
 ### Deliverable
 
