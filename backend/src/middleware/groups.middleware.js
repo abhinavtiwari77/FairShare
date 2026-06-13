@@ -2,7 +2,7 @@ import prisma from '../lib/prisma.js';
 
 export const requireGroupMember = async (req, res, next) => {
   try {
-    const { id: groupId } = req.params;
+    const groupId = req.params.groupId || req.params.id;
     const userId = req.user.id;
 
     const membership = await prisma.groupMember.findUnique({
@@ -15,14 +15,15 @@ export const requireGroupMember = async (req, res, next) => {
 
     req.membership = membership;
     next();
-  } catch {
+  } catch (error) {
+    console.error('GROUP MEMBERSHIP ERROR:', error);
     return res.status(500).json({ error: 'Internal server error checking membership', code: 'INTERNAL_ERROR' });
   }
 };
 
 export const requireGroupAdmin = async (req, res, next) => {
   try {
-    const { id: groupId } = req.params;
+    const groupId = req.params.groupId || req.params.id;
     const userId = req.user.id;
 
     const membership = await prisma.groupMember.findUnique({
