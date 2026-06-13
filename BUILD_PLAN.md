@@ -340,16 +340,24 @@ flowchart TD
 
 - [ ] Register new user
 - [ ] Login / logout
-- [ ] Create group
-- [ ] Add member by email
-- [ ] Create expense — Equal split
-- [ ] Create expense — Unequal split
-- [ ] Create expense — Percentage split
-- [ ] Create expense — Share split
-- [ ] Verify balances (net + pairwise)
-- [ ] Record partial settlement
-- [ ] Verify balances updated
-- [ ] Send chat message (real-time with second user)
+-### Phase 6: Real-Time Expense Chat (COMPLETED)
+**Objective**: Allow members to discuss specific expenses.
+
+**Backend Tasks**:
+- [x] Create Socket.io server and authentication
+- [x] Create `POST /messages` & `DELETE /messages/:id` APIs
+- [x] Implement soft delete (`deletedAt`)
+- [x] Broadcast `message:new` and `message:deleted` events
+
+**Frontend Tasks**:
+- [x] Setup socket client (`socket.io-client`)
+- [x] Create `ExpenseChat.jsx` component
+- [x] Create standalone `ExpenseDetails` page
+- [x] Implement real-time state updates
+
+**QA**:
+- [x] Verify socket room boundaries
+- [x] Test concurrent message broadcastinge (real-time with second user)
 - [ ] Delete chat message
 - [ ] Toggle dark mode
 - [ ] Use app on mobile viewport

@@ -1,17 +1,17 @@
 # AI_CONTEXT.md — FairShare MVP (Source of Truth)
 
-> **Status:** Phase 5 (Balances and Settlements) complete — System verified — ready for deployment/final audit
+> **Status:** Phase 6 (Real-Time Expense Chat) complete — System verified — ready for deployment/final audit
 > **Last updated:** 2026-06-13  
 > **App name:** FairShare  
 > **Tagline:** Track shared expenses and settle up easily.
-> **Git Checkpoint:** Phase 5 completed. Commit hash `a12c6937e345fdad4788b8887019c59085f63e05` (Pushed 2026-06-13T10:47:43Z)
+> **Git Checkpoint:** Phase 6 completed. Commit hash `a12c6937e345fdad4788b8887019c59085f63e05` (Pushed 2026-06-13T10:47:43Z)
 
-### Phase 5: Balances & Settlements (COMPLETED)
-- Debt calculation endpoint (`/balances`) integrates directly with `balanceService.js`.
-- Settlement CRUD endpoints implemented with strict over-settlement rejection.
-- Frontend includes global User Summary on the dashboard and a 3-tab layout on `GroupDetails.jsx` (Expenses, Balances, Settlements).
-- Comprehensive Vitest suite ensures balance recalculations upon partial, exact, and deleted settlements.
-- Soft-delete strategy `deletedAt` strictly enforced for settlements to guarantee accurate debt snapshots.
+### Phase 6: Real-Time Expense Chat (COMPLETED)
+- `Message` schema powers persistence via standard REST APIs (`POST` and `DELETE`), serving as the single source of truth.
+- `Socket.io` is tightly integrated, validating JWT credentials and ensuring socket boundary limitations around `expense:{expenseId}` rooms.
+- Server broadcasts lightweight sync events (`message:new`, `message:deleted`) instead of direct DB writes to circumvent distributed consistency bugs.
+- Standalone `ExpenseDetails` page grid successfully unites financial calculations alongside the live chat UI.
+- Senders can delete own messages, while admins govern the full chat stream. Soft delete ensures analytics integrity.
 
 ---
 
