@@ -1,6 +1,6 @@
 # BUILD_PLAN.md — FairShare MVP
 
-> **Status:** Phase 2 complete — Phase 3 next  
+> **Status:** Phase 3 complete — Phase 4 next  
 > **Source of truth:** [AI_CONTEXT.md](./AI_CONTEXT.md)  
 > **Created:** 2026-06-13
 
@@ -106,16 +106,16 @@ This plan implements **FairShare** — a Splitwise-style expense sharing web app
 
 ### Tasks
 
-- [ ] Implement split calculator service:
+- [x] Implement split calculator service:
   - Equal, Unequal, Percentage, Share
   - Rounding remainder to last participant by sortOrder
   - Payer included/excluded logic
-- [ ] Implement balance service:
+- [x] Implement balance service:
   - Pairwise debt computation from ExpenseSplits + Settlements
   - Net balance per member
   - Dashboard cross-group summary
-- [ ] Write all 13 Vitest test cases (AI_CONTEXT.md §10)
-- [ ] Export calculator as pure functions (testable without DB)
+- [x] Write all 13 Vitest test cases (AI_CONTEXT.md §10)
+- [x] Export calculator as pure functions (testable without DB)
 
 ### Deliverable
 

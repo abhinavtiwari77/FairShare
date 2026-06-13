@@ -1,6 +1,6 @@
 # AI_CONTEXT.md — FairShare MVP (Source of Truth)
 
-> **Status:** Phase 2 complete — ready for Phase 3 (Expenses)  
+> **Status:** Phase 3 complete — ready for Phase 4 (Expenses)  
 > **Last updated:** 2026-06-13  
 > **App name:** FairShare  
 > **Tagline:** Track shared expenses and settle up easily.
@@ -15,7 +15,7 @@
 | **Assignment** | Reverse engineer Splitwise, scope a realistic MVP, build and deploy an application |
 | **Reference product** | [Splitwise](https://www.splitwise.com/) |
 | **Product name** | **FairShare** |
-| **Current phase** | Phase 2 complete → Phase 3 (Expenses) |
+| **Current phase** | Phase 3 complete → Phase 4 (Expenses) |
 | **Implementation** | Phase 0 scaffold deployed locally |
 | **Team** | Solo developer |
 | **Budget** | Free-tier services only |
