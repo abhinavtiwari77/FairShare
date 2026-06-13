@@ -86,4 +86,10 @@
   body {
     @apply bg-background text-foreground antialiased selection:bg-primary/10;
   }
+  
+  /* Hide default browser password reveal icons since we have a custom one */
+  input::-ms-reveal,
+  input::-ms-clear {
+    display: none;
+  }
 }
