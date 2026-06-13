@@ -30,7 +30,17 @@ This project was built from scratch as part of an intensive software engineering
 - 💳 **Settlements**: Record partial or full payments to instantly update group balances.
 - 🎨 **Polished UI/UX**: A dark-mode ready, fully responsive interface inspired by modern SaaS platforms (Vercel, Linear, Stripe).
 
-## 📸 3. Screenshots
+## 🔑 3. Demo Credentials
+
+If you want to test the application quickly without registering, use the following pre-seeded demo accounts:
+
+| User | Email | Password |
+| :--- | :--- | :--- |
+| **Alice Smith** | `alice@demo.com` | `password123` |
+| **Bob Johnson** | `bob@demo.com` | `password123` |
+| **Charlie Davis** | `charlie@demo.com` | `password123` |
+
+## 📸 4. Screenshots
 
 | Dashboard | Group Details | Expense Splitting |
 | :---: | :---: | :---: |
