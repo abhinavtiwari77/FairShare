@@ -27,7 +27,9 @@ export default function GroupDetails() {
 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
-    fetchGroup();
+    (async () => {
+      await fetchGroup();
+    })();
   }, [id]);
 
   const handleSearch = async (e) => {
@@ -36,7 +38,7 @@ export default function GroupDetails() {
     try {
       const res = await api.get(`/api/v1/users/search?email=${searchEmail}`);
       setSearchResult(res.data.user);
-    } catch (_err) {
+    } catch {
       alert('User not found');
     }
   };

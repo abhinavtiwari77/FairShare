@@ -1,5 +1,5 @@
 import request from 'supertest';
-import { describe, expect, it, beforeAll } from 'vitest';
+import { describe, expect, it } from 'vitest';
 import { createApp } from '../src/app.js';
 import prisma from '../src/lib/prisma.js';
 import bcrypt from 'bcrypt';

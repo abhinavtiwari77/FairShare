@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { describe, expect, it, beforeAll } from 'vitest';
 import { createApp } from '../src/app.js';
-import prisma from '../src/lib/prisma.js';
+// No prisma import
 
 describe('Group and Member Endpoints', () => {
   const app = createApp();

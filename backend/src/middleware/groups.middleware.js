@@ -15,7 +15,7 @@ export const requireGroupMember = async (req, res, next) => {
 
     req.membership = membership;
     next();
-  } catch (_error) {
+  } catch {
     return res.status(500).json({ error: 'Internal server error checking membership', code: 'INTERNAL_ERROR' });
   }
 };
@@ -35,7 +35,7 @@ export const requireGroupAdmin = async (req, res, next) => {
 
     req.membership = membership;
     next();
-  } catch (_error) {
+  } catch {
     return res.status(500).json({ error: 'Internal server error checking admin status', code: 'INTERNAL_ERROR' });
   }
 };

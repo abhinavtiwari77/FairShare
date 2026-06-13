@@ -75,7 +75,7 @@ export const calculateGroupBalances = (expenses = [], settlements = []) => {
 
   Object.keys(balances).forEach(userId => {
     balances[userId] = Math.round(balances[userId] * 100) / 100;
-    if (balances[userId] === -0) balances[userId] = 0;
+    if (Object.is(balances[userId], -0)) balances[userId] = 0;
   });
 
   return balances;
