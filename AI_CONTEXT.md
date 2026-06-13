@@ -4,6 +4,7 @@
 > **Last updated:** 2026-06-13  
 > **App name:** FairShare  
 > **Tagline:** Track shared expenses and settle up easily.
+> **Git Checkpoint:** Phase 0 completed. Commit hash `a12c6937e345fdad4788b8887019c59085f63e05` (Pushed 2026-06-13T10:47:43Z)
 
 ---
 
