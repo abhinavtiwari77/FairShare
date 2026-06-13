@@ -93,7 +93,7 @@ export default function ExpenseDetails() {
 
   return (
     <div className="max-w-5xl mx-auto py-8 px-4 space-y-6">
-      <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground -mb-2">
+      <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground mb-4">
         <Link to="/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link>
         <span className="opacity-50">/</span>
         <Link to={`/groups/${groupId}`} className="hover:text-foreground transition-colors">Group</Link>
