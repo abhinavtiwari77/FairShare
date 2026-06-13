@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Calendar, Info, Trash2, Edit2, ArrowLeft } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -93,9 +93,13 @@ export default function ExpenseDetails() {
 
   return (
     <div className="max-w-5xl mx-auto py-8 px-4 space-y-6">
-      <Button variant="link" onClick={() => navigate(`/groups/${groupId}`)} className="px-0">
-        <ArrowLeft className="w-4 h-4 mr-2" /> Back to Group
-      </Button>
+      <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground -mb-2">
+        <Link to="/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link>
+        <span className="opacity-50">/</span>
+        <Link to={`/groups/${groupId}`} className="hover:text-foreground transition-colors">Group</Link>
+        <span className="opacity-50">/</span>
+        <span className="text-foreground">Expense</span>
+      </div>
 
       {error && <div className="bg-destructive/10 text-destructive p-4 rounded-lg text-sm mb-6">{error}</div>}
 

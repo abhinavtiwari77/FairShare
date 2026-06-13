@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
+import SidebarLayout from './components/layout/SidebarLayout';
 
 // Lazy loaded routes
 const Landing = lazy(() => import('./pages/Landing'));
@@ -11,6 +12,7 @@ const Register = lazy(() => import('./pages/Register'));
 const Dashboard = lazy(() => import('./pages/Dashboard'));
 const GroupDetails = lazy(() => import('./pages/GroupDetails'));
 const ExpenseDetails = lazy(() => import('./pages/ExpenseDetails'));
+const Settings = lazy(() => import('./pages/Settings'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -25,7 +27,7 @@ const queryClient = new QueryClient({
 
 // App shell skeleton fallback for chunk loading
 const PageFallback = () => (
-  <div className="flex min-h-screen flex-col bg-background p-8">
+  <div className="flex min-h-screen flex-col bg-background p-8 w-full">
     <div className="mx-auto w-full max-w-5xl space-y-8 animate-pulse">
       <div className="flex justify-between items-center mb-8">
         <div className="h-10 w-1/3 bg-muted rounded-md"></div>
@@ -48,33 +50,18 @@ function App() {
         <Router>
           <Suspense fallback={<PageFallback />}>
             <Routes>
+              {/* Public Routes */}
               <Route path="/" element={<Landing />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
-              <Route 
-                path="/dashboard" 
-                element={
-                  <ProtectedRoute>
-                    <Dashboard />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/groups/:groupId" 
-                element={
-                  <ProtectedRoute>
-                    <GroupDetails />
-                  </ProtectedRoute>
-                } 
-              />
-              <Route 
-                path="/groups/:groupId/expenses/:expenseId" 
-                element={
-                  <ProtectedRoute>
-                    <ExpenseDetails />
-                  </ProtectedRoute>
-                } 
-              />
+              
+              {/* Protected Routes inside Sidebar Layout */}
+              <Route element={<ProtectedRoute><SidebarLayout /></ProtectedRoute>}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/groups/:groupId" element={<GroupDetails />} />
+                <Route path="/groups/:groupId/expenses/:expenseId" element={<ExpenseDetails />} />
+              </Route>
             </Routes>
           </Suspense>
         </Router>

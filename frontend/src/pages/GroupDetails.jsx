@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { LogOut, Archive, Search, UserPlus, Receipt, Banknote } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -132,30 +132,35 @@ export default function GroupDetails() {
   const isAdmin = currentMember?.role === 'ADMIN';
   
   return (
-    <div className="flex min-h-screen flex-col bg-background p-4 md:p-8">
-      <div className="mx-auto w-full max-w-5xl space-y-8">
+    <div className="max-w-5xl mx-auto p-4 md:p-8 space-y-8 animate-in fade-in duration-300">
         
-        {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Group</span>
-              {isAdmin && <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold">ADMIN</span>}
-            </div>
-            <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{group.name}</h1>
-            {group.description && <p className="text-muted-foreground mt-2 max-w-2xl">{group.description}</p>}
+      <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground mb-4">
+        <Link to="/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link>
+        <span className="opacity-50">/</span>
+        <span className="text-foreground">{group.name}</span>
+      </div>
+
+      {/* Header */}
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 -mt-2">
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <span className="text-sm font-medium text-muted-foreground uppercase tracking-wider">Group</span>
+            {isAdmin && <span className="text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full font-bold">ADMIN</span>}
           </div>
-          <div className="flex gap-2">
-            {isAdmin && (
-              <Button variant="outline" onClick={handleArchive} className="gap-2 border-destructive/20 text-destructive hover:bg-destructive/10">
-                <Archive className="w-4 h-4" /> Archive
-              </Button>
-            )}
-            <Button variant="outline" onClick={handleLeave} className="gap-2">
-              <LogOut className="w-4 h-4" /> Leave
-            </Button>
-          </div>
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight">{group.name}</h1>
+          {group.description && <p className="text-muted-foreground mt-2 max-w-2xl">{group.description}</p>}
         </div>
+        <div className="flex gap-2">
+          {isAdmin && (
+            <Button variant="outline" onClick={handleArchive} className="gap-2 border-destructive/20 text-destructive hover:bg-destructive/10">
+              <Archive className="w-4 h-4" /> Archive
+            </Button>
+          )}
+          <Button variant="outline" onClick={handleLeave} className="gap-2">
+            <LogOut className="w-4 h-4" /> Leave
+          </Button>
+        </div>
+      </div>
 
         {/* Main Content & Tabs */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -266,7 +271,6 @@ export default function GroupDetails() {
           </div>
 
         </div>
-      </div>
 
       {showExpenseModal && (
         <Dialog open={showExpenseModal} onOpenChange={setShowExpenseModal}>

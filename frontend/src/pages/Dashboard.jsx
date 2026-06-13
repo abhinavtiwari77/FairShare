@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
-import { Plus, Users, LogOut, ArrowUpRight, ArrowDownRight, Scale, AlertCircle } from 'lucide-react';
+import { Plus, Users, ArrowUpRight, ArrowDownRight, Scale, AlertCircle } from 'lucide-react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/api';
 import CreateGroupModal from '../components/CreateGroupModal';
@@ -9,7 +9,7 @@ import { Button } from '../components/ui/Button';
 import { Card, CardHeader, CardTitle, CardContent, CardDescription } from '../components/ui/Card';
 
 export default function Dashboard() {
-  const { user, logout } = useAuth();
+  const { user } = useAuth();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -45,26 +45,20 @@ export default function Dashboard() {
   const isError = groupsError || balancesError;
 
   return (
-    <div className="flex min-h-screen flex-col bg-background p-8">
-      <div className="mx-auto w-full max-w-5xl space-y-8">
-        
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Welcome back, {user?.fullName?.split(' ')[0]}</h1>
-            <p className="text-muted-foreground mt-1">Here's your financial overview.</p>
-          </div>
-          <div className="flex gap-3">
-            <Button onClick={() => setIsModalOpen(true)} className="gap-2">
-              <Plus className="w-4 h-4" />
-              Create Group
-            </Button>
-            <Button variant="outline" onClick={logout} className="gap-2">
-              <LogOut className="w-4 h-4" />
-              Logout
-            </Button>
-          </div>
+    <div className="max-w-5xl mx-auto p-4 md:p-8 space-y-8 animate-in fade-in duration-300">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight">Welcome back, {user?.fullName?.split(' ')[0]}</h1>
+          <p className="text-muted-foreground mt-1">Here's your financial overview.</p>
         </div>
+        <div className="flex gap-3">
+          <Button onClick={() => setIsModalOpen(true)} className="gap-2">
+            <Plus className="w-4 h-4" />
+            Create Group
+          </Button>
+        </div>
+      </div>
 
         {/* Error State */}
         {isError && (
@@ -170,8 +164,6 @@ export default function Dashboard() {
             </div>
           )}
         </div>
-      </div>
-
       {isModalOpen && (
         <CreateGroupModal 
           onClose={() => setIsModalOpen(false)} 
