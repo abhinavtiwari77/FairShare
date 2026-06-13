@@ -2,7 +2,8 @@
 
 > Track shared expenses without the spreadsheets. A modern, AI-collaborated full-stack application built to simplify group expenses.
 
-![Landing Page](/path/to/landing-placeholder.png)
+![Landing Page](<img width="1907" height="906" alt="image" src="https://github.com/user-attachments/assets/4863bbac-809c-46ce-9f07-3192bd18a4b0" />
+)
 
 ## 1. Project Overview
 FairShare is a complete, production-grade expense-sharing application inspired by tools like Splitwise. It allows users to create groups, log shared expenses, split costs using various algorithms, discuss details in real-time chat, and efficiently settle up debts using an optimized balance-tracking engine.
@@ -22,7 +23,10 @@ This project was built from scratch as part of an intensive software engineering
 
 | Dashboard | Group Details | Expense Splitting |
 | :---: | :---: | :---: |
-| ![Dashboard Placeholder](/path/to/dashboard.png) | ![Group Placeholder](/path/to/group.png) | ![Expense Placeholder](/path/to/expense.png) |
+| ![Dashboard Placeholder](<img width="1896" height="901" alt="image" src="https://github.com/user-attachments/assets/79692ed7-d3ac-4be5-b480-23d262859b21" />
+) | ![Group Placeholder](<img width="1578" height="832" alt="image" src="https://github.com/user-attachments/assets/e4535c95-abc4-495a-b2dd-0ae2069ba0c7" />
+) | ![Expense Placeholder](<img width="1567" height="833" alt="image" src="https://github.com/user-attachments/assets/ca834469-2cf3-420f-8140-daf8bd822bd9" />
+) |
 
 ## 4. Tech Stack
 **Frontend:**
