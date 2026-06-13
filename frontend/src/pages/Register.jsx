@@ -5,12 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Input } from '../components/ui/Input';
 import { Label } from '../components/ui/Label';
 import { Button } from '../components/ui/Button';
-import { UserPlus } from 'lucide-react';
+import { UserPlus, Eye, EyeOff, PieChart, CheckCircle2 } from 'lucide-react';
 
 export default function Register() {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { register } = useAuth();
@@ -30,18 +31,68 @@ export default function Register() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-2 text-center pb-6">
-          <div className="mx-auto bg-primary/10 w-12 h-12 rounded-full flex items-center justify-center mb-2">
-            <UserPlus className="w-6 h-6 text-primary" />
+    <div className="min-h-screen bg-background flex">
+      {/* Left Panel - Branding (Hidden on mobile) */}
+      <div className="hidden lg:flex flex-1 flex-col justify-between bg-muted/30 p-12 border-r relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent -z-10" />
+        
+        <div>
+          <Link to="/" className="flex items-center gap-2 mb-16 hover:opacity-80 transition-opacity w-fit">
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-md">
+              <PieChart className="w-5 h-5 text-primary-foreground" />
+            </div>
+            <span className="text-xl font-bold tracking-tight text-foreground">FairShare</span>
+          </Link>
+          <div className="space-y-6 max-w-md">
+            <h1 className="text-4xl font-extrabold tracking-tight text-foreground">Join FairShare.</h1>
+            <p className="text-lg text-muted-foreground">Create your account today and experience the simplest way to track shared expenses and settle up.</p>
           </div>
-          <CardTitle className="text-2xl font-bold tracking-tight">Create an account</CardTitle>
-          <CardDescription>Join FairShare to track your expenses</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            {error && <div className="rounded-md border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">{error}</div>}
+        </div>
+
+        <div className="space-y-4 max-w-md">
+          <div className="flex items-center gap-3">
+            <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <CheckCircle2 className="w-4 h-4 text-primary" />
+            </div>
+            <span className="text-sm font-medium">Free forever with unlimited groups</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <CheckCircle2 className="w-4 h-4 text-primary" />
+            </div>
+            <span className="text-sm font-medium">No credit card required</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <CheckCircle2 className="w-4 h-4 text-primary" />
+            </div>
+            <span className="text-sm font-medium">Instant setup in seconds</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Panel - Auth Form */}
+      <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 relative">
+        {/* Mobile Header */}
+        <div className="lg:hidden absolute top-8 left-8 flex items-center gap-2">
+          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+            <PieChart className="w-5 h-5 text-primary-foreground" />
+          </div>
+          <span className="text-xl font-bold tracking-tight">FairShare</span>
+        </div>
+
+        <div className="w-full max-w-[400px] space-y-8">
+          <div className="text-center lg:text-left space-y-2">
+            <h2 className="text-3xl font-bold tracking-tight">Create an account</h2>
+            <p className="text-muted-foreground">Join FairShare to track your expenses</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {error && (
+              <div className="rounded-md border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive flex items-center gap-2 animate-in fade-in slide-in-from-top-1">
+                <span className="font-semibold text-destructive">Error:</span> {error}
+              </div>
+            )}
             
             <div className="space-y-2">
               <Label htmlFor="fullName">Full Name</Label>
@@ -52,6 +103,8 @@ export default function Register() {
                 onChange={(e) => setFullName(e.target.value)}
                 required
                 placeholder="Jane Doe"
+                className="h-11 transition-all focus-visible:ring-primary"
+                autoComplete="name"
               />
             </div>
 
@@ -64,36 +117,55 @@ export default function Register() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="name@example.com"
+                className="h-11 transition-all focus-visible:ring-primary"
+                autoComplete="email"
               />
             </div>
             
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                minLength={8}
-              />
-              <p className="text-[10px] text-muted-foreground mt-1">Must be at least 8 characters</p>
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  minLength={8}
+                  placeholder="Create a password"
+                  className="h-11 pr-10 transition-all focus-visible:ring-primary"
+                  autoComplete="new-password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+              <p className="text-[10px] text-muted-foreground mt-1 font-medium">Must be at least 8 characters</p>
             </div>
             
-            <Button type="submit" className="w-full mt-2" disabled={loading}>
-              {loading ? 'Creating account...' : 'Sign up'}
+            <Button type="submit" className="w-full h-11 text-base font-medium relative group overflow-hidden" disabled={loading}>
+              <span className={`transition-opacity ${loading ? 'opacity-0' : 'opacity-100'}`}>Sign up</span>
+              {loading && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="h-5 w-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                </div>
+              )}
             </Button>
           </form>
-        </CardContent>
-        <CardFooter className="flex justify-center border-t p-6">
+          
           <p className="text-center text-sm text-muted-foreground">
             Already have an account?{' '}
             <Link to="/login" className="font-semibold text-primary hover:underline transition-colors">
               Log in
             </Link>
           </p>
-        </CardFooter>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }

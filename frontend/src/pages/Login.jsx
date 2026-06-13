@@ -5,11 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter }
 import { Input } from '../components/ui/Input';
 import { Label } from '../components/ui/Label';
 import { Button } from '../components/ui/Button';
-import { LogIn } from 'lucide-react';
+import { LogIn, Eye, EyeOff, PieChart, CheckCircle2 } from 'lucide-react';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const { login } = useAuth();
@@ -29,18 +30,68 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-2 text-center pb-6">
-          <div className="mx-auto bg-primary/10 w-12 h-12 rounded-full flex items-center justify-center mb-2">
-            <LogIn className="w-6 h-6 text-primary" />
+    <div className="min-h-screen bg-background flex">
+      {/* Left Panel - Branding (Hidden on mobile) */}
+      <div className="hidden lg:flex flex-1 flex-col justify-between bg-muted/30 p-12 border-r relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,_var(--tw-gradient-stops))] from-primary/10 via-transparent to-transparent -z-10" />
+        
+        <div>
+          <Link to="/" className="flex items-center gap-2 mb-16 hover:opacity-80 transition-opacity w-fit">
+            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center shadow-md">
+              <PieChart className="w-5 h-5 text-primary-foreground" />
+            </div>
+            <span className="text-xl font-bold tracking-tight text-foreground">FairShare</span>
+          </Link>
+          <div className="space-y-6 max-w-md">
+            <h1 className="text-4xl font-extrabold tracking-tight text-foreground">Welcome back.</h1>
+            <p className="text-lg text-muted-foreground">Log in to pick up right where you left off. Track balances, settle debts, and manage your group expenses.</p>
           </div>
-          <CardTitle className="text-2xl font-bold tracking-tight">Welcome back</CardTitle>
-          <CardDescription>Log in to your FairShare account</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-            {error && <div className="rounded-md border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive">{error}</div>}
+        </div>
+
+        <div className="space-y-4 max-w-md">
+          <div className="flex items-center gap-3">
+            <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <CheckCircle2 className="w-4 h-4 text-primary" />
+            </div>
+            <span className="text-sm font-medium">Real-time sync across devices</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <CheckCircle2 className="w-4 h-4 text-primary" />
+            </div>
+            <span className="text-sm font-medium">Advanced fractional splitting</span>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+              <CheckCircle2 className="w-4 h-4 text-primary" />
+            </div>
+            <span className="text-sm font-medium">Secure and private ledgers</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Right Panel - Auth Form */}
+      <div className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 relative">
+        {/* Mobile Header */}
+        <div className="lg:hidden absolute top-8 left-8 flex items-center gap-2">
+          <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+            <PieChart className="w-5 h-5 text-primary-foreground" />
+          </div>
+          <span className="text-xl font-bold tracking-tight">FairShare</span>
+        </div>
+
+        <div className="w-full max-w-[400px] space-y-8">
+          <div className="text-center lg:text-left space-y-2">
+            <h2 className="text-3xl font-bold tracking-tight">Log in</h2>
+            <p className="text-muted-foreground">Enter your credentials to access your account</p>
+          </div>
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {error && (
+              <div className="rounded-md border border-destructive/20 bg-destructive/10 p-3 text-sm text-destructive flex items-center gap-2 animate-in fade-in slide-in-from-top-1">
+                <span className="font-semibold text-destructive">Error:</span> {error}
+              </div>
+            )}
             
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -51,6 +102,8 @@ export default function Login() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="name@example.com"
+                className="h-11 transition-all focus-visible:ring-primary"
+                autoComplete="email"
               />
             </div>
             
@@ -58,29 +111,46 @@ export default function Login() {
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
               </div>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
+              <div className="relative">
+                <Input
+                  id="password"
+                  type={showPassword ? 'text' : 'password'}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  placeholder="Enter your password"
+                  className="h-11 pr-10 transition-all focus-visible:ring-primary"
+                  autoComplete="current-password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
             
-            <Button type="submit" className="w-full mt-2" disabled={loading}>
-              {loading ? 'Logging in...' : 'Log in'}
+            <Button type="submit" className="w-full h-11 text-base font-medium relative group overflow-hidden" disabled={loading}>
+              <span className={`transition-opacity ${loading ? 'opacity-0' : 'opacity-100'}`}>Log in</span>
+              {loading && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="h-5 w-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
+                </div>
+              )}
             </Button>
           </form>
-        </CardContent>
-        <CardFooter className="flex justify-center border-t p-6">
+          
           <p className="text-center text-sm text-muted-foreground">
             Don't have an account?{' '}
             <Link to="/register" className="font-semibold text-primary hover:underline transition-colors">
               Sign up
             </Link>
           </p>
-        </CardFooter>
-      </Card>
+        </div>
+      </div>
     </div>
   );
 }
