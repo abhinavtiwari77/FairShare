@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/api';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from './ui/Dialog';
 import { Input } from './ui/Input';
@@ -6,23 +7,31 @@ import { Label } from './ui/Label';
 import { Button } from './ui/Button';
 
 export default function CreateGroupModal({ onClose, onCreated }) {
+  const queryClient = useQueryClient();
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
-  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const res = await api.post('/api/v1/groups', { name, description });
-      onCreated(res.data.group);
-    } catch (err) {
+  const mutation = useMutation({
+    mutationFn: async (data) => {
+      const res = await api.post('/api/v1/groups', data);
+      return res.data.group;
+    },
+    onSuccess: (newGroup) => {
+      queryClient.invalidateQueries({ queryKey: ['groups'] });
+      onCreated(newGroup);
+    },
+    onError: (err) => {
       console.error(err);
       alert(err.response?.data?.error || 'Failed to create group');
-    } finally {
-      setLoading(false);
     }
+  });
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    mutation.mutate({ name, description });
   };
+
+  const loading = mutation.isPending;
 
   return (
     <Dialog open={true} onOpenChange={(open) => !open && onClose()}>

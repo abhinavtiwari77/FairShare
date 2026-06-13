@@ -1,66 +1,63 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { Receipt, Calendar, Info, Trash2, Edit2, ArrowLeft } from 'lucide-react';
+import { Calendar, Info, Trash2, Edit2, ArrowLeft } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/api';
 import ExpenseForm from '../components/expenses/ExpenseForm';
 import ExpenseChat from '../components/expenses/ExpenseChat';
 import { Button } from '../components/ui/Button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/Card';
+import { Card } from '../components/ui/Card';
 
 export default function ExpenseDetails() {
   const { groupId, expenseId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const queryClient = useQueryClient();
   
-  const [expenseData, setExpenseData] = useState(null);
-  const [groupMembers, setGroupMembers] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
   const [isEditing, setIsEditing] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
 
-  const fetchExpense = async () => {
-    try {
-      setLoading(true);
+  const { data, isLoading, isError, error } = useQuery({
+    queryKey: ['expense', expenseId],
+    queryFn: async () => {
       const [expRes, grpRes] = await Promise.all([
         api.get(`/api/v1/expenses/${expenseId}`),
         api.get(`/api/v1/groups/${groupId}`)
       ]);
-      setExpenseData(expRes.data);
-      setGroupMembers(grpRes.data.members);
-    } catch (err) {
-      setError(err.response?.data?.error || 'Failed to load expense details');
-    } finally {
-      setLoading(false);
+      return { expenseData: expRes.data, groupMembers: grpRes.data.members };
     }
-  };
+  });
 
-  useEffect(() => {
-    fetchExpense();
-  }, [expenseId, groupId]);
-
-  const handleDelete = async () => {
-    if (!window.confirm('Are you sure you want to delete this expense? This action cannot be undone.')) return;
-    
-    try {
-      setIsDeleting(true);
-      await api.delete(`/api/v1/expenses/${expenseId}`);
+  const deleteMutation = useMutation({
+    mutationFn: async () => api.delete(`/api/v1/expenses/${expenseId}`),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['expenses', groupId] });
+      queryClient.invalidateQueries({ queryKey: ['balances', groupId] });
+      queryClient.invalidateQueries({ queryKey: ['balances', 'user'] });
       navigate(`/groups/${groupId}`);
-    } catch (err) {
-      setError(err.response?.data?.error || 'Failed to delete expense');
-      setIsDeleting(false);
+    },
+    onError: (err) => {
+      alert(err.response?.data?.error || 'Failed to delete expense');
     }
+  });
+
+  const handleDelete = () => {
+    if (!window.confirm('Are you sure you want to delete this expense? This action cannot be undone.')) return;
+    deleteMutation.mutate();
   };
 
-  if (loading && !expenseData) {
-    return <div className="flex justify-center p-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div></div>;
+  if (isLoading) {
+    return (
+      <div className="flex justify-center p-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
   }
 
-  if (error && !expenseData) {
+  if (isError) {
     return (
       <div className="max-w-3xl mx-auto p-4">
-        <div className="bg-destructive/10 text-destructive p-4 rounded-lg text-sm">{error}</div>
+        <div className="bg-destructive/10 text-destructive p-4 rounded-lg text-sm">{error?.response?.data?.error || 'Failed to load expense'}</div>
         <Button variant="link" onClick={() => navigate(`/groups/${groupId}`)} className="mt-4 px-0">
           <ArrowLeft className="w-4 h-4 mr-2" /> Back to Group
         </Button>
@@ -68,6 +65,7 @@ export default function ExpenseDetails() {
     );
   }
 
+  const { expenseData, groupMembers } = data;
   const { expense, participants, splits, creator, payer } = expenseData;
   const currentMember = groupMembers.find(m => m.user.id === user.id);
   const canEditOrDelete = creator.id === user.id || currentMember?.role === 'ADMIN';
@@ -93,7 +91,6 @@ export default function ExpenseDetails() {
                   initialData={{ ...expense, participants }}
                   onSuccess={() => {
                     setIsEditing(false);
-                    fetchExpense();
                   }}
                   onCancel={() => setIsEditing(false)}
                 />
@@ -174,8 +171,8 @@ export default function ExpenseDetails() {
                     <Button variant="outline" size="sm" onClick={() => setIsEditing(true)}>
                       <Edit2 className="w-4 h-4 mr-2" /> Edit
                     </Button>
-                    <Button variant="destructive" size="sm" onClick={handleDelete} disabled={isDeleting}>
-                      <Trash2 className="w-4 h-4 mr-2" /> {isDeleting ? 'Deleting...' : 'Delete'}
+                    <Button variant="destructive" size="sm" onClick={handleDelete} disabled={deleteMutation.isPending}>
+                      <Trash2 className="w-4 h-4 mr-2" /> {deleteMutation.isPending ? 'Deleting...' : 'Delete'}
                     </Button>
                   </div>
                 )}

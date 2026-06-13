@@ -1,30 +1,29 @@
-import { useState, useEffect } from 'react';
+import { useQuery } from '@tanstack/react-query';
 import api from '../../lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '../ui/Card';
 
 export default function GroupBalances({ groupId }) {
-  const [balances, setBalances] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-
-  useEffect(() => {
-    fetchBalances();
-  }, [groupId]);
-
-  const fetchBalances = async () => {
-    try {
-      setLoading(true);
-      const { data } = await api.get(`/groups/${groupId}/balances`);
-      setBalances(data);
-    } catch (err) {
-      setError(err.response?.data?.error || 'Failed to load balances');
-    } finally {
-      setLoading(false);
+  const { data: balances, isLoading, isError, error } = useQuery({
+    queryKey: ['balances', groupId],
+    queryFn: async () => {
+      const { data } = await api.get(`/api/v1/groups/${groupId}/balances`);
+      return data;
     }
-  };
+  });
 
-  if (loading) return <div className="text-center py-8 text-sm text-muted-foreground">Loading balances...</div>;
-  if (error) return <div className="text-destructive py-4 text-sm">{error}</div>;
+  if (isLoading) {
+    return (
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="h-64 animate-pulse rounded-md bg-muted"></div>
+        <div className="h-64 animate-pulse rounded-md bg-muted"></div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return <div className="text-destructive py-4 text-sm">{error?.response?.data?.error || 'Failed to load balances'}</div>;
+  }
+
   if (!balances) return null;
 
   return (

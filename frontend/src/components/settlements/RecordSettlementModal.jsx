@@ -1,4 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../lib/api';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../ui/Dialog';
 import { Input } from '../ui/Input';
@@ -6,32 +7,39 @@ import { Label } from '../ui/Label';
 import { Button } from '../ui/Button';
 
 export default function RecordSettlementModal({ groupId, onClose, onSettlementCreated }) {
+  const queryClient = useQueryClient();
   const [receiverId, setReceiverId] = useState('');
   const [amount, setAmount] = useState('');
   const [note, setNote] = useState('');
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
-  const [pairwiseDebts, setPairwiseDebts] = useState([]);
-  const [fetching, setFetching] = useState(true);
 
-  useEffect(() => {
-    const fetchDebts = async () => {
-      try {
-        const { data } = await api.get(`/groups/${groupId}/balances`);
-        setPairwiseDebts(data.pairwiseDebts);
-      } catch (err) {
-        setError('Failed to load debts');
-      } finally {
-        setFetching(false);
-      }
-    };
-    fetchDebts();
-  }, [groupId]);
+  const { data: balances, isLoading: fetching } = useQuery({
+    queryKey: ['balances', groupId],
+    queryFn: async () => {
+      const { data } = await api.get(`/api/v1/groups/${groupId}/balances`);
+      return data;
+    }
+  });
 
+  const pairwiseDebts = balances?.pairwiseDebts || [];
   const selectedDebt = pairwiseDebts.find(d => d.creditorId === receiverId);
   const maxAmount = selectedDebt ? selectedDebt.amount : 0;
 
-  const handleSubmit = async (e) => {
+  const settlementMutation = useMutation({
+    mutationFn: async (data) => api.post(`/api/v1/groups/${groupId}/settlements`, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['balances', groupId] });
+      queryClient.invalidateQueries({ queryKey: ['balances', 'user'] });
+      queryClient.invalidateQueries({ queryKey: ['settlements', groupId] });
+      onSettlementCreated();
+      onClose();
+    },
+    onError: (err) => {
+      setError(err.response?.data?.error || 'Failed to record settlement');
+    }
+  });
+
+  const handleSubmit = (e) => {
     e.preventDefault();
     if (!receiverId || !amount) {
       setError('Please fill in all required fields');
@@ -49,22 +57,15 @@ export default function RecordSettlementModal({ groupId, onClose, onSettlementCr
       return;
     }
 
-    try {
-      setLoading(true);
-      setError('');
-      await api.post(`/groups/${groupId}/settlements`, {
-        receiverId,
-        amount: numAmount,
-        note
-      });
-      onSettlementCreated();
-      onClose();
-    } catch (err) {
-      setError(err.response?.data?.error || 'Failed to record settlement');
-    } finally {
-      setLoading(false);
-    }
+    setError('');
+    settlementMutation.mutate({
+      receiverId,
+      amount: numAmount,
+      note
+    });
   };
+
+  const loading = settlementMutation.isPending;
 
   return (
     <Dialog open={true} onOpenChange={(open) => !open && onClose()}>

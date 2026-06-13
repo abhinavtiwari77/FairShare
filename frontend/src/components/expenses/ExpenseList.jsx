@@ -1,49 +1,46 @@
-import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useInfiniteQuery } from '@tanstack/react-query';
 import api from '../../lib/api';
 import { Button } from '../ui/Button';
 
 export default function ExpenseList({ groupId }) {
-  const [expenses, setExpenses] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(false);
-
-  const fetchExpenses = async (currentPage) => {
-    try {
-      setLoading(true);
-      const res = await api.get(`/api/v1/groups/${groupId}/expenses?page=${currentPage}&limit=10`);
-      if (currentPage === 1) {
-        setExpenses(res.data.expenses);
-      } else {
-        setExpenses(prev => [...prev, ...res.data.expenses]);
+  const {
+    data,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+    isError,
+    error
+  } = useInfiniteQuery({
+    queryKey: ['expenses', groupId],
+    queryFn: async ({ pageParam = 1 }) => {
+      const res = await api.get(`/api/v1/groups/${groupId}/expenses?page=${pageParam}&limit=10`);
+      return res.data;
+    },
+    getNextPageParam: (lastPage) => {
+      if (lastPage.pagination.page < lastPage.pagination.totalPages) {
+        return lastPage.pagination.page + 1;
       }
-      setHasMore(res.data.pagination.page < res.data.pagination.totalPages);
-    } catch (err) {
-      setError(err.response?.data?.error || 'Failed to load expenses');
-    } finally {
-      setLoading(false);
-    }
-  };
+      return undefined;
+    },
+  });
 
-  useEffect(() => {
-    fetchExpenses(1);
-  }, [groupId]);
-
-  const loadMore = () => {
-    const nextPage = page + 1;
-    setPage(nextPage);
-    fetchExpenses(nextPage);
-  };
-
-  if (loading && page === 1) {
-    return <div className="text-center p-8 text-sm text-muted-foreground">Loading expenses...</div>;
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-4 p-4">
+        {[1, 2, 3].map(i => (
+          <div key={i} className="h-16 w-full animate-pulse rounded-md bg-muted"></div>
+        ))}
+      </div>
+    );
   }
 
-  if (error) {
-    return <div className="text-destructive p-4 text-sm">{error}</div>;
+  if (isError) {
+    return <div className="text-destructive p-4 text-sm">{error?.response?.data?.error || 'Failed to load expenses'}</div>;
   }
+
+  const expenses = data?.pages.flatMap(page => page.expenses) || [];
 
   if (expenses.length === 0) {
     return <div className="text-muted-foreground text-sm text-center p-12 bg-muted/20 rounded-md border border-dashed">No expenses yet. Add one to get started!</div>;
@@ -79,15 +76,15 @@ export default function ExpenseList({ groupId }) {
         ))}
       </div>
       
-      {hasMore && (
+      {hasNextPage && (
         <div className="p-4 border-t">
           <Button 
             variant="secondary"
             className="w-full"
-            onClick={loadMore}
-            disabled={loading}
+            onClick={() => fetchNextPage()}
+            disabled={isFetchingNextPage}
           >
-            {loading ? 'Loading...' : 'Load More'}
+            {isFetchingNextPage ? 'Loading...' : 'Load More'}
           </Button>
         </div>
       )}

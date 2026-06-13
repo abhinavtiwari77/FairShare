@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../lib/api';
 import { Input } from '../ui/Input';
 import { Label } from '../ui/Label';
@@ -9,7 +10,7 @@ const CATEGORIES = ['FOOD', 'TRANSPORT', 'ACCOMMODATION', 'ENTERTAINMENT', 'UTIL
 
 export default function ExpenseForm({ groupId, members, initialData, onSuccess, onCancel, onClose }) {
   const isEdit = !!initialData;
-  const [loading, setLoading] = useState(false);
+  const queryClient = useQueryClient();
   const [error, setError] = useState('');
 
   const [title, setTitle] = useState(initialData?.title || '');
@@ -54,7 +55,29 @@ export default function ExpenseForm({ groupId, members, initialData, onSuccess, 
     ));
   };
 
-  const handleSubmit = async (e) => {
+  const mutation = useMutation({
+    mutationFn: async (payload) => {
+      if (isEdit) {
+        await api.patch(`/api/v1/expenses/${initialData.id}`, payload);
+      } else {
+        await api.post(`/api/v1/groups/${groupId}/expenses`, payload);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['expenses', groupId] });
+      queryClient.invalidateQueries({ queryKey: ['balances', groupId] });
+      queryClient.invalidateQueries({ queryKey: ['balances', 'user'] });
+      if (isEdit) {
+        queryClient.invalidateQueries({ queryKey: ['expense', initialData.id] });
+      }
+      onSuccess();
+    },
+    onError: (err) => {
+      setError(err.response?.data?.error || 'Failed to save expense');
+    }
+  });
+
+  const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
 
@@ -91,20 +114,10 @@ export default function ExpenseForm({ groupId, members, initialData, onSuccess, 
       }))
     };
 
-    try {
-      setLoading(true);
-      if (isEdit) {
-        await api.patch(`/api/v1/expenses/${initialData.id}`, payload);
-      } else {
-        await api.post(`/api/v1/groups/${groupId}/expenses`, payload);
-      }
-      onSuccess();
-    } catch (err) {
-      setError(err.response?.data?.error || 'Failed to save expense');
-    } finally {
-      setLoading(false);
-    }
+    mutation.mutate(payload);
   };
+
+  const loading = mutation.isPending;
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">

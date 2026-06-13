@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { Send, Trash2 } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../../lib/api';
 import { socket, connectSocket, disconnectSocket } from '../../lib/socket';
 import { Card } from '../ui/Card';
@@ -9,11 +10,18 @@ import { Button } from '../ui/Button';
 
 export default function ExpenseChat({ expenseId, isAdmin }) {
   const { user } = useAuth();
-  const [messages, setMessages] = useState([]);
+  const queryClient = useQueryClient();
   const [newMessage, setNewMessage] = useState('');
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const messagesEndRef = useRef(null);
+
+  const { data: messages = [], isLoading } = useQuery({
+    queryKey: ['messages', expenseId],
+    queryFn: async () => {
+      const res = await api.get(`/api/v1/expenses/${expenseId}/messages`);
+      return res.data.messages;
+    }
+  });
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -24,65 +32,58 @@ export default function ExpenseChat({ expenseId, isAdmin }) {
   }, [messages]);
 
   useEffect(() => {
-    let mounted = true;
-
-    const fetchMessages = async () => {
-      try {
-        const res = await api.get(`/expenses/${expenseId}/messages`);
-        if (mounted) {
-          setMessages(res.data.messages);
-          setLoading(false);
-        }
-      } catch (err) {
-        if (mounted) setError(err.response?.data?.error || 'Failed to load messages');
-      }
-    };
-
-    fetchMessages();
-
     connectSocket();
     socket.emit('join:expense', { expenseId });
 
     const handleNewMessage = (msg) => {
-      setMessages(prev => [...prev, msg]);
+      queryClient.setQueryData(['messages', expenseId], (oldData) => {
+        if (!oldData) return [msg];
+        if (oldData.some(m => m.id === msg.id)) return oldData;
+        return [...oldData, msg];
+      });
     };
 
     const handleMessageDeleted = ({ messageId }) => {
-      setMessages(prev => prev.filter(m => m.id !== messageId));
+      queryClient.setQueryData(['messages', expenseId], (oldData) => {
+        if (!oldData) return [];
+        return oldData.filter(m => m.id !== messageId);
+      });
     };
 
     socket.on('message:new', handleNewMessage);
     socket.on('message:deleted', handleMessageDeleted);
 
     return () => {
-      mounted = false;
       socket.off('message:new', handleNewMessage);
       socket.off('message:deleted', handleMessageDeleted);
       disconnectSocket();
     };
-  }, [expenseId]);
+  }, [expenseId, queryClient]);
 
-  const handleSendMessage = async (e) => {
+  const sendMutation = useMutation({
+    mutationFn: async (text) => api.post(`/api/v1/expenses/${expenseId}/messages`, { text }),
+    onSuccess: () => {
+      setNewMessage('');
+    },
+    onError: (err) => setError(err.response?.data?.error || 'Failed to send message')
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: async (messageId) => api.delete(`/api/v1/expenses/${expenseId}/messages/${messageId}`),
+    onError: (err) => setError(err.response?.data?.error || 'Failed to delete message')
+  });
+
+  const handleSendMessage = (e) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
-
-    try {
-      await api.post(`/expenses/${expenseId}/messages`, { text: newMessage.trim() });
-      setNewMessage('');
-    } catch (err) {
-      setError(err.response?.data?.error || 'Failed to send message');
-    }
+    sendMutation.mutate(newMessage.trim());
   };
 
-  const handleDeleteMessage = async (messageId) => {
-    try {
-      await api.delete(`/expenses/${expenseId}/messages/${messageId}`);
-    } catch (err) {
-      setError(err.response?.data?.error || 'Failed to delete message');
-    }
+  const handleDeleteMessage = (messageId) => {
+    deleteMutation.mutate(messageId);
   };
 
-  if (loading) return <div className="p-4 text-center text-muted-foreground text-sm">Loading chat...</div>;
+  if (isLoading) return <div className="p-4 text-center text-muted-foreground text-sm">Loading chat...</div>;
 
   return (
     <Card className="flex flex-col h-[600px] overflow-hidden">
