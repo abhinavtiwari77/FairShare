@@ -170,15 +170,15 @@ This plan implements **FairShare** — a Splitwise-style expense sharing web app
 
 ### Tasks
 
-- [ ] Balance API: group balances (net + all non-zero pairwise)
-- [ ] Balance API: user dashboard summary (total owe, total owed, net)
-- [ ] Settlement CRUD API (create, list, admin delete; no edit)
-- [ ] Settlement validation: reject over-settlement
-- [ ] Frontend: Balances tab on group page
-- [ ] Frontend: Dashboard summary cards (you owe / you are owed / net)
-- [ ] Frontend: Settlement form (select payer, receiver, amount, note)
-- [ ] Frontend: Settlement history list
-- [ ] Hide zero balances in UI
+- [x] Balance API: group balances (net + all non-zero pairwise)
+- [x] Balance API: user dashboard summary (total owe, total owed, net)
+- [x] Settlement CRUD API (create, list, admin delete; no edit)
+- [x] Settlement validation: reject over-settlement
+- [x] Frontend: Balances tab on group page
+- [x] Frontend: Dashboard summary cards (you owe / you are owed / net)
+- [x] Frontend: Settlement form (select payer, receiver, amount, note)
+- [x] Frontend: Settlement history list
+- [x] Hide zero balances in UI
 
 ### Deliverable
 

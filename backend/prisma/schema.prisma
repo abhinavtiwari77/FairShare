@@ -148,6 +148,7 @@ model Settlement {
   amount      Decimal  @db.Decimal(12, 2)
   note        String?
   createdById String   @db.Uuid
+  deletedAt   DateTime?
   createdAt   DateTime @default(now())
 
   group     Group @relation(fields: [groupId], references: [id])
