@@ -98,8 +98,8 @@ Ensure you have Node.js (v18+) and PostgreSQL installed.
 
 ```bash
 # Clone the repository
-git clone https://github.com/abhinavtiwari77/Splitwise.git
-cd Splitwise
+git clone https://github.com/abhinavtiwari77/FairShare.git
+cd FairShare
 
 # Install dependencies
 npm install
