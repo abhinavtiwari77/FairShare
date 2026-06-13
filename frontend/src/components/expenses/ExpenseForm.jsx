@@ -1,10 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import api from '../../lib/api';
+import { Input } from '../ui/Input';
+import { Label } from '../ui/Label';
+import { Button } from '../ui/Button';
 
 const SPLIT_TYPES = ['EQUAL', 'UNEQUAL', 'PERCENTAGE', 'SHARE'];
 const CATEGORIES = ['FOOD', 'TRANSPORT', 'ACCOMMODATION', 'ENTERTAINMENT', 'UTILITIES', 'SHOPPING', 'OTHER'];
 
-export default function ExpenseForm({ groupId, members, initialData, onSuccess, onCancel }) {
+export default function ExpenseForm({ groupId, members, initialData, onSuccess, onCancel, onClose }) {
   const isEdit = !!initialData;
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -16,7 +19,9 @@ export default function ExpenseForm({ groupId, members, initialData, onSuccess, 
   const [notes, setNotes] = useState(initialData?.notes || '');
   const [splitType, setSplitType] = useState(initialData?.splitType || 'EQUAL');
   
-  // Participants state: array of { userId, selected, value }
+  // Handle both onCancel and onClose for compatibility
+  const handleCancel = onCancel || onClose;
+
   const [participants, setParticipants] = useState(() => {
     if (initialData && initialData.participants) {
       return members.map(m => {
@@ -59,7 +64,6 @@ export default function ExpenseForm({ groupId, members, initialData, onSuccess, 
       return;
     }
 
-    // Validate inputs based on split type before sending to server
     if (splitType === 'PERCENTAGE') {
       const sum = activeParticipants.reduce((acc, p) => acc + Number(p.value || 0), 0);
       if (Math.abs(sum - 100) > 0.01) {
@@ -104,32 +108,32 @@ export default function ExpenseForm({ groupId, members, initialData, onSuccess, 
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
-      {error && <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm">{error}</div>}
+      {error && <div className="bg-destructive/10 text-destructive p-3 rounded-md text-sm">{error}</div>}
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-          <input 
+        <div className="space-y-2">
+          <Label>Title</Label>
+          <Input 
             type="text" required 
-            className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
             value={title} onChange={e => setTitle(e.target.value)} 
+            placeholder="e.g. Dinner"
           />
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Amount ($)</label>
-          <input 
+        <div className="space-y-2">
+          <Label>Amount ($)</Label>
+          <Input 
             type="number" step="0.01" min="0.01" required 
-            className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
             value={amount} onChange={e => setAmount(e.target.value)} 
+            placeholder="0.00"
           />
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Paid By</label>
+        <div className="space-y-2">
+          <Label>Paid By</Label>
           <select 
-            className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             value={paidById} onChange={e => setPaidById(e.target.value)}
           >
             {members.map(m => (
@@ -137,10 +141,10 @@ export default function ExpenseForm({ groupId, members, initialData, onSuccess, 
             ))}
           </select>
         </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Category</label>
+        <div className="space-y-2">
+          <Label>Category</Label>
           <select 
-            className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+            className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
             value={category} onChange={e => setCategory(e.target.value)}
           >
             {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
@@ -148,9 +152,9 @@ export default function ExpenseForm({ groupId, members, initialData, onSuccess, 
         </div>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Split Type</label>
-        <div className="flex bg-gray-100 p-1 rounded-lg">
+      <div className="space-y-2">
+        <Label>Split Type</Label>
+        <div className="flex bg-muted/50 p-1 rounded-md border">
           {SPLIT_TYPES.map(type => (
             <button
               key={type}
@@ -159,7 +163,7 @@ export default function ExpenseForm({ groupId, members, initialData, onSuccess, 
                 setSplitType(type);
                 setError('');
               }}
-              className={`flex-1 py-2 text-sm font-medium rounded-md transition-colors ${splitType === type ? 'bg-white shadow text-blue-600' : 'text-gray-600 hover:text-gray-900'}`}
+              className={`flex-1 py-1.5 text-xs font-medium rounded-sm transition-colors ${splitType === type ? 'bg-background shadow-sm text-foreground' : 'text-muted-foreground hover:text-foreground'}`}
             >
               {type}
             </button>
@@ -167,36 +171,36 @@ export default function ExpenseForm({ groupId, members, initialData, onSuccess, 
         </div>
       </div>
 
-      <div className="border border-gray-200 rounded-lg overflow-hidden">
-        <div className="bg-gray-50 px-4 py-2 border-b border-gray-200 font-medium text-sm text-gray-700">
+      <div className="border rounded-md overflow-hidden">
+        <div className="bg-muted/30 px-4 py-2 border-b font-medium text-sm text-foreground">
           Participants
         </div>
-        <div className="divide-y divide-gray-100 max-h-60 overflow-y-auto">
+        <div className="divide-y max-h-60 overflow-y-auto">
           {participants.map(p => (
-            <div key={p.userId} className="flex items-center p-3 hover:bg-gray-50">
+            <div key={p.userId} className="flex items-center p-3 hover:bg-muted/10 transition-colors">
               <input 
                 type="checkbox" 
                 checked={p.selected} 
                 onChange={() => toggleParticipant(p.userId)}
-                className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                className="w-4 h-4 rounded border-input"
               />
-              <span className={`ml-3 flex-1 ${p.selected ? 'text-gray-900 font-medium' : 'text-gray-500'}`}>
+              <span className={`ml-3 flex-1 text-sm ${p.selected ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>
                 {p.fullName}
               </span>
               
               {p.selected && splitType !== 'EQUAL' && (
                 <div className="ml-4 flex items-center">
-                  <input
+                  <Input
                     type="number"
                     step={splitType === 'SHARE' ? '1' : '0.01'}
                     min="0"
                     placeholder={splitType === 'PERCENTAGE' ? '%' : splitType === 'SHARE' ? 'shares' : '$'}
-                    className="w-24 p-1 text-sm border rounded text-right focus:ring-2 focus:ring-blue-500"
+                    className="w-24 h-8 px-2 text-sm text-right"
                     value={p.value}
                     onChange={e => updateParticipantValue(p.userId, e.target.value)}
                     required
                   />
-                  {splitType === 'PERCENTAGE' && <span className="ml-1 text-gray-500">%</span>}
+                  {splitType === 'PERCENTAGE' && <span className="ml-2 text-sm text-muted-foreground">%</span>}
                 </div>
               )}
             </div>
@@ -204,28 +208,24 @@ export default function ExpenseForm({ groupId, members, initialData, onSuccess, 
         </div>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+      <div className="space-y-2">
+        <Label>Notes</Label>
         <textarea 
-          className="w-full p-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+          className="flex w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 min-h-[80px]"
           value={notes} onChange={e => setNotes(e.target.value)} 
-          rows="2"
+          placeholder="Optional notes..."
         />
       </div>
 
-      <div className="flex justify-end gap-3 pt-4">
-        <button 
-          type="button" onClick={onCancel}
-          className="px-4 py-2 text-gray-700 font-medium hover:bg-gray-100 rounded-lg transition-colors"
-        >
-          Cancel
-        </button>
-        <button 
-          type="submit" disabled={loading}
-          className="px-4 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
-        >
+      <div className="flex justify-end gap-2 pt-4">
+        {handleCancel && (
+          <Button type="button" variant="outline" onClick={handleCancel}>
+            Cancel
+          </Button>
+        )}
+        <Button type="submit" disabled={loading}>
           {loading ? 'Saving...' : 'Save Expense'}
-        </button>
+        </Button>
       </div>
     </form>
   );

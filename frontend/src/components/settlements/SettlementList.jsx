@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import api from '../../lib/api';
 import { useAuth } from '../../contexts/AuthContext';
+import { Trash2, Banknote } from 'lucide-react';
+import { Button } from '../ui/Button';
 
 export default function SettlementList({ groupId, keyProp }) {
   const [settlements, setSettlements] = useState([]);
@@ -27,51 +29,58 @@ export default function SettlementList({ groupId, keyProp }) {
     if (!window.confirm('Are you sure you want to delete this payment?')) return;
     try {
       await api.delete(`/groups/${groupId}/settlements/${id}`);
-      fetchSettlements();
-      // Wait, deleting a settlement affects balances! 
-      // The parent component should be notified to refresh balances.
-      // But for simplicity, we can just reload the window or emit an event.
       window.location.reload();
     } catch (error) {
       alert(error.response?.data?.error || 'Failed to delete payment');
     }
   };
 
-  if (loading) return <div className="text-sm text-gray-500">Loading history...</div>;
-  if (settlements.length === 0) return <div className="text-sm text-gray-500">No payment history.</div>;
+  if (loading) return <div className="text-sm text-muted-foreground p-8 text-center">Loading history...</div>;
+  
+  if (settlements.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center p-12 text-center border-dashed">
+        <Banknote className="w-8 h-8 text-muted-foreground mb-3 opacity-50" />
+        <p className="text-sm text-muted-foreground">No payment history.</p>
+      </div>
+    );
+  }
 
   return (
-    <div className="space-y-4">
-      <h3 className="text-lg font-semibold">Payment History</h3>
-      <ul className="space-y-3">
-        {settlements.map(s => {
-          const isCreator = s.createdBy.id === user.id;
-          const isPayer = s.payer.id === user.id;
-          const isReceiver = s.receiver.id === user.id;
-          const canDelete = isCreator || isPayer || isReceiver;
+    <div className="divide-y divide-border">
+      {settlements.map(s => {
+        const isCreator = s.createdBy.id === user.id;
+        const isPayer = s.payer.id === user.id;
+        const isReceiver = s.receiver.id === user.id;
+        const canDelete = isCreator || isPayer || isReceiver;
 
-          return (
-            <li key={s.id} className="p-3 bg-white border border-gray-100 rounded shadow-sm flex justify-between items-center">
-              <div>
-                <p className="text-sm">
-                  <span className="font-medium text-gray-900">{s.payer.fullName}</span> paid <span className="font-medium text-gray-900">{s.receiver.fullName}</span>
-                </p>
-                <p className="text-xs text-gray-500">
-                  {new Date(s.createdAt).toLocaleDateString()} {s.note && `- ${s.note}`}
-                </p>
-              </div>
-              <div className="flex items-center gap-4">
-                <span className="font-semibold text-green-600">${Number(s.amount).toFixed(2)}</span>
-                {canDelete && (
-                  <button onClick={() => handleDelete(s.id)} className="text-red-500 text-xs hover:underline">
-                    Delete
-                  </button>
-                )}
-              </div>
-            </li>
-          );
-        })}
-      </ul>
+        return (
+          <div key={s.id} className="p-4 flex justify-between items-center hover:bg-muted/30 transition-colors">
+            <div className="space-y-1">
+              <p className="text-sm">
+                <span className="font-medium text-foreground">{s.payer.fullName}</span> paid <span className="font-medium text-foreground">{s.receiver.fullName}</span>
+              </p>
+              <p className="text-xs text-muted-foreground flex items-center gap-1">
+                {new Date(s.createdAt).toLocaleDateString()} {s.note && <span>&middot; {s.note}</span>}
+              </p>
+            </div>
+            <div className="flex items-center gap-4">
+              <span className="font-bold text-positive text-sm">${Number(s.amount).toFixed(2)}</span>
+              {canDelete && (
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  onClick={() => handleDelete(s.id)} 
+                  className="text-muted-foreground hover:text-destructive hover:bg-destructive/10 h-8 w-8"
+                  title="Delete Payment"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              )}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

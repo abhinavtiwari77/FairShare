@@ -1,5 +1,9 @@
 import { useState, useEffect } from 'react';
 import api from '../../lib/api';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '../ui/Dialog';
+import { Input } from '../ui/Input';
+import { Label } from '../ui/Label';
+import { Button } from '../ui/Button';
 
 export default function RecordSettlementModal({ groupId, onClose, onSettlementCreated }) {
   const [receiverId, setReceiverId] = useState('');
@@ -24,7 +28,6 @@ export default function RecordSettlementModal({ groupId, onClose, onSettlementCr
     fetchDebts();
   }, [groupId]);
 
-  // Find the selected debt to validate max amount
   const selectedDebt = pairwiseDebts.find(d => d.creditorId === receiverId);
   const maxAmount = selectedDebt ? selectedDebt.amount : 0;
 
@@ -64,26 +67,29 @@ export default function RecordSettlementModal({ groupId, onClose, onSettlementCr
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg w-full max-w-md p-6">
-        <h2 className="text-xl font-bold mb-4">Record a Payment</h2>
+    <Dialog open={true} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Record a Payment</DialogTitle>
+          <DialogDescription>Settle up your debts with group members.</DialogDescription>
+        </DialogHeader>
         
         {error && (
-          <div className="bg-red-50 text-red-600 p-3 rounded mb-4 text-sm">
+          <div className="bg-destructive/10 text-destructive p-3 rounded-md text-sm mb-4">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-1">Who did you pay?</label>
+        <form onSubmit={handleSubmit} className="space-y-4 py-2">
+          <div className="space-y-2">
+            <Label>Who did you pay?</Label>
             <select
               value={receiverId}
               onChange={(e) => {
                 setReceiverId(e.target.value);
                 setAmount('');
               }}
-              className="w-full border rounded p-2"
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
               required
             >
               <option value="">Select person...</option>
@@ -93,58 +99,55 @@ export default function RecordSettlementModal({ groupId, onClose, onSettlementCr
                 </option>
               ))}
             </select>
-            {pairwiseDebts.length === 0 && (
-              <p className="text-xs text-gray-500 mt-1">You don't owe anyone right now.</p>
+            {!fetching && pairwiseDebts.length === 0 && (
+              <p className="text-xs text-muted-foreground mt-1">You don't owe anyone right now.</p>
             )}
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">Amount ($)</label>
-            <input
+          <div className="space-y-2">
+            <Label>Amount ($)</Label>
+            <Input
               type="number"
               step="0.01"
               min="0.01"
               max={maxAmount || undefined}
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
-              className="w-full border rounded p-2"
               placeholder="0.00"
               required
               disabled={!receiverId}
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-1">Note (Optional)</label>
-            <input
+          <div className="space-y-2">
+            <Label>Note (Optional)</Label>
+            <Input
               type="text"
               maxLength={255}
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              className="w-full border rounded p-2"
               placeholder="e.g. Venmo"
             />
           </div>
 
-          <div className="flex justify-end gap-3 mt-6">
-            <button
+          <DialogFooter className="mt-6">
+            <Button
               type="button"
+              variant="outline"
               onClick={onClose}
-              className="px-4 py-2 border rounded hover:bg-gray-50"
               disabled={loading}
             >
               Cancel
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
-              className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 disabled:opacity-50"
               disabled={loading || !receiverId}
             >
               {loading ? 'Saving...' : 'Save Payment'}
-            </button>
-          </div>
+            </Button>
+          </DialogFooter>
         </form>
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }
