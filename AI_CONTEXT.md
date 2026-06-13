@@ -1,6 +1,6 @@
 # AI_CONTEXT.md — FairShare MVP (Source of Truth)
 
-> **Status:** Phase 0 complete — ready for Phase 1 (Auth)  
+> **Status:** Phase 1 complete — ready for Phase 2 (Groups)  
 > **Last updated:** 2026-06-13  
 > **App name:** FairShare  
 > **Tagline:** Track shared expenses and settle up easily.
@@ -15,7 +15,7 @@
 | **Assignment** | Reverse engineer Splitwise, scope a realistic MVP, build and deploy an application |
 | **Reference product** | [Splitwise](https://www.splitwise.com/) |
 | **Product name** | **FairShare** |
-| **Current phase** | Phase 0 complete → Phase 1 (Auth) |
+| **Current phase** | Phase 1 complete → Phase 2 (Groups) |
 | **Implementation** | Phase 0 scaffold deployed locally |
 | **Team** | Solo developer |
 | **Budget** | Free-tier services only |
@@ -137,8 +137,8 @@ OAuth, email verification, password reset, email invitations, join links, paymen
 
 ### 3.4 Final MVP feature checklist
 
-- [x] Authentication
-- [x] Group management
+- [x] Authentication (Verified with QA pass)
+- [ ] Group management
 - [x] Member management
 - [x] Expense management
 - [x] Equal / Unequal / Percentage / Share splits
@@ -535,8 +535,18 @@ Unauthenticated → redirect to `/login`.
 | Password rules | Min 8 characters |
 | Token | JWT, 7-day expiry |
 | Refresh token | None |
-| Cookie | `httpOnly: true`, `secure: true` (production), `sameSite: 'none'` |
+| Cookie | `httpOnly: true`, `secure: process.env.NODE_ENV === 'production'`, `sameSite: 'none'` |
 | CORS | `credentials: true`, origin = `FRONTEND_URL` |
+
+**Final Architecture:**
+- **Backend:** Express API with endpoints `/register`, `/login`, `/logout`, `/me`.
+  - Routes (`auth.routes.js`) connect to Controllers (`auth.controller.js`).
+  - Controllers validate via Zod (`auth.validation.js`), call Services (`auth.service.js`) for DB and cryptography.
+  - JWT HTTP-only cookie acts as session token. Middleware (`auth.middleware.js`) handles protected routes.
+- **Frontend:** React Context (`AuthContext.jsx`) manages session state globally. `ProtectedRoute.jsx` intercepts unauthenticated requests.
+
+**Bugs Fixed During QA:**
+- Addressed a `TypeError` in Zod validation error handling when `error.errors` was undefined by using optional chaining (`error.errors?.[0]?.message || error.issues?.[0]?.message`).
 
 ---
 

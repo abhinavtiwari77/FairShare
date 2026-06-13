@@ -1,6 +1,6 @@
 # BUILD_PLAN.md — FairShare MVP
 
-> **Status:** Phase 0 complete — Phase 1 next  
+> **Status:** Phase 1 complete — Phase 2 next  
 > **Source of truth:** [AI_CONTEXT.md](./AI_CONTEXT.md)  
 > **Created:** 2026-06-13
 
@@ -48,14 +48,14 @@ This plan implements **FairShare** — a Splitwise-style expense sharing web app
 
 ### Tasks
 
-- [ ] Write Prisma schema (all entities from AI_CONTEXT.md §5)
-- [ ] Run initial migration against local/dev Neon database
-- [ ] Implement auth routes: register, login, logout, me
-- [ ] Implement JWT middleware (HTTP-only cookie)
-- [ ] Implement Zod validation for auth payloads
+- [x] Write Prisma schema (all entities from AI_CONTEXT.md §5)
+- [x] Run initial migration against local/dev Neon database
+- [x] Implement auth routes: register, login, logout, me
+- [x] Implement JWT middleware (HTTP-only cookie)
+- [x] Implement Zod validation for auth payloads
 - [ ] Implement user search by email endpoint
-- [ ] Frontend: AuthContext, login/register pages, protected route wrapper
-- [ ] Frontend: Axios instance with `withCredentials: true`
+- [x] Frontend: AuthContext, login/register pages, protected route wrapper
+- [x] Frontend: Axios instance with `withCredentials: true`
 
 ### Deliverable
 
