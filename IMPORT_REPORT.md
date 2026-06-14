@@ -1,46 +1,182 @@
-# Import Report: Anomaly Log
+# Import Report
 
-When the CSV importer ingested `expenses_export.csv`, the backend staging pipeline intercepted the data and prevented it from being blindly inserted into the production database. 
+```text
+Import Report for Job fbeab9f7-2bbe-4431-97c7-7b36a38ebd37
+Generated At: 2026-06-14T18:45:17.528Z
+=================================================
 
-Instead, the system ran the data through our 12-point Anomaly Detection engine. Every issue was logged into the `ImportIssue` table and presented to the user on the Anomaly Review Dashboard for explicit resolution.
-
-Below is the exhaustive log of every anomaly detected and the action taken by the user to resolve it:
-
-1. **Row 5 & 6 (Duplicate Expense)**: "Dinner at Marina Bites" vs "dinner - marina bites". Both same date, same payer, same amount.
-   - *Action Taken*: Surfaced as `DUPLICATE` anomaly. Suggested Action: `REJECT` Row 6.
-
-2. **Row 7 (Formatting Error)**: Amount is `"1,200"` instead of `1200`.
-   - *Action Taken*: Cleaned via regex during parsing, but flagged as a `FORMAT_ISSUE` (Warning) for user visibility.
-
-3. **Row 9 & 11 (Unknown User)**: `priya` (case issue) and `Priya S` (unknown alias).
-   - *Action Taken*: Case issues (`priya`) were auto-resolved using case-insensitive mapping. Unknown aliases (`Priya S`) flagged as `UNKNOWN_USER`. User must override or map to Priya.
-
-4. **Row 12 (Unequal Split)**: Aisha's birthday cake. Aisha not charged.
-   - *Action Taken*: Passed validation as `split_details` accurately sum to the total.
-
-5. **Row 13 (Missing Payer)**: "House cleaning supplies" with no `paid_by`.
-   - *Action Taken*: Flagged as `MISSING_FIELDS` Error. Import blocked until user assigns a payer.
-
-6. **Row 14 (Settlement Logged as Expense)**: "Rohan paid Aisha back", amount 5000.
-   - *Action Taken*: Flagged as `SETTLEMENT_LOGGED_AS_EXPENSE`. Suggested Action: `CONVERT_TO_SETTLEMENT`. If accepted, writes to `Settlement` table instead of `Expense`.
-
-7. **Row 15 (Invalid Split Sum)**: Percentage split sums to 110%.
-   - *Action Taken*: Flagged as `INVALID_SPLIT_SUM` Error. Import blocked until percentages are corrected to sum to 100%.
-
-8. **Row 20 & 21 (Currency Mixing)**: USD expenses.
-   - *Action Taken*: Flagged as `CURRENCY_MIXING` Info. Converted to INR using a standard exchange rate (83.5) while preserving `originalAmount` as USD in the DB.
-
-9. **Row 23 (Unknown Split Participant)**: `Dev's friend Kabir`.
-   - *Action Taken*: Flagged as `UNKNOWN_USER`. Kabir is not in the DB. User must override or assign to Dev.
-
-10. **Row 24 & 25 (Different Amount Duplicate)**: "Dinner at Thalassa" (2400) vs "Thalassa dinner" (2450).
-    - *Action Taken*: Flagged as `DIFFERENT_AMOUNT_DUPLICATE`. Suggested Action: `REJECT` one.
-
-11. **Row 26 (Negative Amount)**: Amount `-30` USD.
-    - *Action Taken*: Flagged as `NEGATIVE_AMOUNT`. Suggested Action: `CONVERT_TO_REFUND`.
-
-12. **Row 36 (Expense After Member Left)**: Meera included in April Groceries.
-    - *Action Taken*: Flagged as `MEMBERSHIP_ERROR`. Meera left end of March. User must override to omit Meera from the split.
-
-13. **Row 38 (Expense Before Member Joined / Settlement)**: Sam deposit share.
-    - *Action Taken*: Flagged as `MEMBERSHIP_ERROR` (Sam wasn't officially moved in until later, depending on date boundaries) and potentially `SETTLEMENT_LOGGED_AS_EXPENSE`.
+Row 2:
+  - [INFO] CLEAN: Ready to import
+  Action Taken: ACCEPTED_SUGGESTION
+-------------------------------------------------
+Row 3:
+  - [INFO] CLEAN: Ready to import
+  Action Taken: ACCEPTED_SUGGESTION
+-------------------------------------------------
+Row 4:
+  - [INFO] CLEAN: Ready to import
+  Action Taken: ACCEPTED_SUGGESTION
+-------------------------------------------------
+Row 5:
+  - [ERROR] MEMBERSHIP_ERROR: Expense date is before Dev joined the group
+  Action Taken: REJECTED_ROW
+-------------------------------------------------
+Row 6:
+  - [ERROR] MEMBERSHIP_ERROR: Expense date is before Dev joined the group
+  - [WARNING] DUPLICATE: Exact match (date, payer, amount) found earlier. Potential duplicate.
+  Action Taken: REJECTED_ROW
+-------------------------------------------------
+Row 7:
+  - [WARNING] FORMAT_ISSUE: Amount formatting issue (commas or non-numeric)
+  Action Taken: REJECTED_ROW
+-------------------------------------------------
+Row 8:
+  - [INFO] CLEAN: Ready to import
+  Action Taken: ACCEPTED_SUGGESTION
+-------------------------------------------------
+Row 9:
+  - [INFO] CLEAN: Ready to import
+  Action Taken: ACCEPTED_SUGGESTION
+-------------------------------------------------
+Row 10:
+  - [INFO] CLEAN: Ready to import
+  Action Taken: ACCEPTED_SUGGESTION
+-------------------------------------------------
+Row 11:
+  - [WARNING] UNKNOWN_USER: Payer "Priya S" is not in group
+  Action Taken: REJECTED_ROW
+-------------------------------------------------
+Row 12:
+  - [INFO] CLEAN: Ready to import
+  Action Taken: ACCEPTED_SUGGESTION
+-------------------------------------------------
+Row 13:
+  - [ERROR] MISSING_FIELDS: Missing description, paid_by, amount, or split_with
+  Action Taken: REJECTED_ROW
+-------------------------------------------------
+Row 14:
+  - [WARNING] SETTLEMENT_LOGGED_AS_EXPENSE: This looks like a settlement, not an expense
+  Action Taken: REJECTED_ROW
+-------------------------------------------------
+Row 15:
+  - [ERROR] INVALID_SPLIT_SUM: Percentages sum to 110% instead of 100%
+  Action Taken: REJECTED_ROW
+-------------------------------------------------
+Row 16:
+  - [INFO] CLEAN: Ready to import
+  Action Taken: ACCEPTED_SUGGESTION
+-------------------------------------------------
+Row 17:
+  - [INFO] CLEAN: Ready to import
+  Action Taken: ACCEPTED_SUGGESTION
+-------------------------------------------------
+Row 18:
+  - [INFO] CLEAN: Ready to import
+  Action Taken: ACCEPTED_SUGGESTION
+-------------------------------------------------
+Row 19:
+  - [INFO] CLEAN: Ready to import
+  Action Taken: ACCEPTED_SUGGESTION
+-------------------------------------------------
+Row 20:
+  - [INFO] CURRENCY_MIXING: Non-INR currency detected (USD). Requires conversion.
+  Action Taken: REJECTED_ROW
+-------------------------------------------------
+Row 21:
+  - [INFO] CURRENCY_MIXING: Non-INR currency detected (USD). Requires conversion.
+  Action Taken: REJECTED_ROW
+-------------------------------------------------
+Row 22:
+  - [INFO] CLEAN: Ready to import
+  Action Taken: ACCEPTED_SUGGESTION
+-------------------------------------------------
+Row 23:
+  - [WARNING] UNKNOWN_USER: Split participant "Dev's friend Kabir" is not in group
+  - [INFO] CURRENCY_MIXING: Non-INR currency detected (USD). Requires conversion.
+  Action Taken: REJECTED_ROW
+-------------------------------------------------
+Row 24:
+  - [INFO] CLEAN: Ready to import
+  Action Taken: ACCEPTED_SUGGESTION
+-------------------------------------------------
+Row 25:
+  - [INFO] CLEAN: Ready to import
+  Action Taken: ACCEPTED_SUGGESTION
+-------------------------------------------------
+Row 26:
+  - [WARNING] NEGATIVE_AMOUNT: Negative amount detected. Is this a refund?
+  - [INFO] CURRENCY_MIXING: Non-INR currency detected (USD). Requires conversion.
+  Action Taken: REJECTED_ROW
+-------------------------------------------------
+Row 27:
+  - [ERROR] MEMBERSHIP_ERROR: Expense date is before Aisha joined the group
+  - [ERROR] MEMBERSHIP_ERROR: Expense date is before Dev joined the group
+  - [ERROR] MEMBERSHIP_ERROR: Expense date is before Rohan joined the group
+  - [ERROR] MEMBERSHIP_ERROR: Expense date is before Priya joined the group
+  Action Taken: REJECTED_ROW
+-------------------------------------------------
+Row 28:
+  - [INFO] CLEAN: Ready to import
+  Action Taken: ACCEPTED_SUGGESTION
+-------------------------------------------------
+Row 29:
+  - [INFO] CLEAN: Ready to import
+  Action Taken: ACCEPTED_SUGGESTION
+-------------------------------------------------
+Row 30:
+  - [INFO] CLEAN: Ready to import
+  Action Taken: ACCEPTED_SUGGESTION
+-------------------------------------------------
+Row 31:
+  - [ERROR] ZERO_AMOUNT: Amount cannot be zero
+  Action Taken: REJECTED_ROW
+-------------------------------------------------
+Row 32:
+  - [ERROR] INVALID_SPLIT_SUM: Percentages sum to 110% instead of 100%
+  Action Taken: REJECTED_ROW
+-------------------------------------------------
+Row 33:
+  - [INFO] CLEAN: Ready to import
+  Action Taken: ACCEPTED_SUGGESTION
+-------------------------------------------------
+Row 34:
+  - [INFO] CLEAN: Ready to import
+  Action Taken: ACCEPTED_SUGGESTION
+-------------------------------------------------
+Row 35:
+  - [INFO] CLEAN: Ready to import
+  Action Taken: ACCEPTED_SUGGESTION
+-------------------------------------------------
+Row 36:
+  - [ERROR] MEMBERSHIP_ERROR: Expense date is after Meera left the group
+  Action Taken: REJECTED_ROW
+-------------------------------------------------
+Row 37:
+  - [INFO] CLEAN: Ready to import
+  Action Taken: ACCEPTED_SUGGESTION
+-------------------------------------------------
+Row 38:
+  - [INFO] CLEAN: Ready to import
+  Action Taken: ACCEPTED_SUGGESTION
+-------------------------------------------------
+Row 39:
+  - [INFO] CLEAN: Ready to import
+  Action Taken: ACCEPTED_SUGGESTION
+-------------------------------------------------
+Row 40:
+  - [INFO] CLEAN: Ready to import
+  Action Taken: ACCEPTED_SUGGESTION
+-------------------------------------------------
+Row 41:
+  - [INFO] CLEAN: Ready to import
+  Action Taken: ACCEPTED_SUGGESTION
+-------------------------------------------------
+Row 42:
+  - [INFO] CLEAN: Ready to import
+  Action Taken: ACCEPTED_SUGGESTION
+-------------------------------------------------
+Row 43:
+  - [INFO] CLEAN: Ready to import
+  Action Taken: ACCEPTED_SUGGESTION
+-------------------------------------------------
+```
