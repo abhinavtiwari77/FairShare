@@ -56,11 +56,16 @@ const ImportReview = () => {
 
   const resolveIssue = async (issueId, action) => {
     try {
-      await api.post(`/api/v1/groups/${groupId}/import/${job.id}/issues/${issueId}/resolve`, {
+      const res = await api.post(`/api/v1/groups/${groupId}/import/${job.id}/issues/${issueId}/resolve`, {
         action
       });
-      // Reload job
-      loadJob(job.id);
+      // Update local state to avoid full page reload
+      setJob(prev => ({
+        ...prev,
+        issues: prev.issues.map(issue => 
+          issue.id === issueId ? res.data : issue
+        )
+      }));
     } catch (error) {
       console.error(error);
       alert('Failed to resolve issue');
