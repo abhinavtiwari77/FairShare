@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Upload, AlertCircle, CheckCircle2, ChevronRight, XCircle, FileType, Check } from 'lucide-react';
-import axios from 'axios';
+import api from '../lib/api';
 
 const ImportReview = () => {
   const { groupId } = useParams();
@@ -25,7 +25,7 @@ const ImportReview = () => {
   const loadJob = async (id) => {
     setLoadingJob(true);
     try {
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/v1/groups/${groupId}/import/${id}`, { withCredentials: true });
+      const res = await api.get(`/api/v1/groups/${groupId}/import/${id}`);
       setJob(res.data);
     } catch (error) {
       console.error(error);
@@ -42,7 +42,9 @@ const ImportReview = () => {
     formData.append('file', file);
 
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/groups/${groupId}/import`, formData, { withCredentials: true });
+      const res = await api.post(`/api/v1/groups/${groupId}/import`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
       loadJob(res.data.jobId);
     } catch (error) {
       console.error(error);
@@ -54,9 +56,9 @@ const ImportReview = () => {
 
   const resolveIssue = async (issueId, action) => {
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/groups/${groupId}/import/${job.id}/issues/${issueId}/resolve`, {
+      await api.post(`/api/v1/groups/${groupId}/import/${job.id}/issues/${issueId}/resolve`, {
         action
-      }, { withCredentials: true });
+      });
       // Reload job
       loadJob(job.id);
     } catch (error) {
@@ -67,7 +69,7 @@ const ImportReview = () => {
 
   const finalizeImport = async () => {
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/groups/${groupId}/import/${job.id}/finalize`, {}, { withCredentials: true });
+      const res = await api.post(`/api/v1/groups/${groupId}/import/${job.id}/finalize`, {});
       
       // Download Import Report
       if (res.data.reportText) {
