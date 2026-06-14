@@ -39,6 +39,15 @@ export default function ExpenseChat({ expenseId, isAdmin }) {
       queryClient.setQueryData(['messages', expenseId], (oldData) => {
         if (!oldData) return [msg];
         if (oldData.some(m => m.id === msg.id)) return oldData;
+        
+        // Find if we have an optimistic message for this exact text and sender
+        const tempIndex = oldData.findIndex(m => m.id.startsWith('temp-') && m.text === msg.text && m.sender.id === msg.sender.id);
+        if (tempIndex !== -1) {
+          const newData = [...oldData];
+          newData[tempIndex] = msg;
+          return newData;
+        }
+        
         return [...oldData, msg];
       });
     };
@@ -80,7 +89,17 @@ export default function ExpenseChat({ expenseId, isAdmin }) {
 
       setNewMessage('');
       
-      return { previousMessages };
+      return { previousMessages, optimisticMessage };
+    },
+    onSuccess: (res, variables, context) => {
+      queryClient.setQueryData(['messages', expenseId], (oldData) => {
+        if (!oldData) return [];
+        const hasReal = oldData.some(m => m.id === res.data.message.id);
+        if (hasReal) {
+          return oldData.filter(m => m.id !== context.optimisticMessage.id);
+        }
+        return oldData.map(m => m.id === context.optimisticMessage.id ? res.data.message : m);
+      });
     },
     onError: (err, newText, context) => {
       queryClient.setQueryData(['messages', expenseId], context.previousMessages);
@@ -115,6 +134,7 @@ export default function ExpenseChat({ expenseId, isAdmin }) {
   };
 
   const handleDeleteMessage = (messageId) => {
+    if (messageId.startsWith('temp-')) return;
     deleteMutation.mutate(messageId);
   };
 
