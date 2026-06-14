@@ -90,10 +90,23 @@ export const finalizeImport = async (req, res, next) => {
     reportText += `Generated At: ${new Date().toISOString()}\n`;
     reportText += `=================================================\n\n`;
 
+    const rowIssuesMap = {};
     issues.forEach(issue => {
-      reportText += `Row ${issue.rowNumber} | Severity: ${issue.severity} | Type: ${issue.issueType}\n`;
-      reportText += `Message: ${issue.message}\n`;
-      reportText += `Action Taken: ${issue.userAction}\n`;
+      if (!rowIssuesMap[issue.rowNumber]) {
+        rowIssuesMap[issue.rowNumber] = [];
+      }
+      rowIssuesMap[issue.rowNumber].push(issue);
+    });
+
+    Object.keys(rowIssuesMap).sort((a, b) => Number(a) - Number(b)).forEach(rowNum => {
+      const rowIssues = rowIssuesMap[rowNum];
+      reportText += `Row ${rowNum}:\n`;
+      rowIssues.forEach(issue => {
+        reportText += `  - [${issue.severity}] ${issue.issueType}: ${issue.message}\n`;
+      });
+      // In the UI, the user action applies to the issue (or row), so we show the primary action taken
+      const actions = [...new Set(rowIssues.map(i => i.userAction))];
+      reportText += `  Action Taken: ${actions.join(', ')}\n`;
       reportText += `-------------------------------------------------\n`;
     });
 
