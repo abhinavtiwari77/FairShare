@@ -74,7 +74,7 @@ export default function ExpenseList({ groupId }) {
               <div className="space-y-1">
                 <h4 className="font-semibold text-foreground text-sm">{expense.title}</h4>
                 <p className="text-xs text-muted-foreground">
-                  Paid by <span className="font-medium text-foreground">{expense.paidBy.fullName}</span> on {new Date(expense.createdAt).toLocaleDateString()}
+                  Paid by <span className="font-medium text-foreground">{expense.paidBy.fullName}</span> on {new Date(expense.expenseDate || expense.createdAt).toLocaleDateString()}
                 </p>
                 {expense.category && (
                   <span className="inline-block mt-2 text-[10px] bg-secondary text-secondary-foreground px-2 py-0.5 rounded-full font-medium tracking-wide">

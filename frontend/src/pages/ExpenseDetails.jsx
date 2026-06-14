@@ -126,7 +126,7 @@ export default function ExpenseDetails() {
                   <div className="space-y-1">
                     <h1 className="text-2xl font-bold tracking-tight">{expense.title}</h1>
                     <div className="flex items-center text-sm text-muted-foreground gap-3">
-                      <span className="flex items-center gap-1"><Calendar className="w-4 h-4" /> {new Date(expense.createdAt).toLocaleDateString()}</span>
+                      <span className="flex items-center gap-1"><Calendar className="w-4 h-4" /> {new Date(expense.expenseDate || expense.createdAt).toLocaleDateString()}</span>
                       <span>Added by {creator.fullName}</span>
                     </div>
                     {expense.category && (
