@@ -133,7 +133,8 @@ const ImportReview = () => {
             </div>
             <button 
               onClick={finalizeImport}
-              className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg font-medium"
+              disabled={job.issues.some(i => i.userAction === 'PENDING')}
+              className="px-6 py-2 bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-lg font-medium transition-colors"
             >
               Finalize Import
             </button>

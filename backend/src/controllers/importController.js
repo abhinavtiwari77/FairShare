@@ -99,6 +99,9 @@ export const finalizeImport = async (req, res, next) => {
 
     res.json({ ...result, reportText });
   } catch (error) {
+    if (error.message && error.message.includes('pending issues')) {
+      return res.status(400).json({ error: error.message });
+    }
     next(error);
   }
 };
