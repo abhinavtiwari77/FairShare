@@ -16,21 +16,21 @@ A modern, AI-collaborated full-stack application built to simplify group expense
 
 ---
 
-## 📖 1. Project Overview
+## 1. Project Overview
 FairShare is a complete, production-grade expense-sharing application inspired by tools like Splitwise. It allows users to create groups, log shared expenses, split costs using various algorithms, discuss details in real-time chat, and efficiently settle up debts using an optimized balance-tracking engine.
 
 This project was built from scratch as part of an intensive software engineering assignment, demonstrating full-stack proficiency, rigorous testing, and advanced AI-assisted development techniques.
 
-## ✨ 2. Features
-- 🔒 **Authentication**: Secure JWT-based authentication via HTTP-only cookies.
-- 👥 **Group Management**: Create groups, invite members via email, and assign Admin/Member roles.
-- 🧮 **Smart Expense Splitting**: Supports Equal, Exact Amount, Percentage, and Fractional Share splitting algorithms, with perfect cent-level precision.
-- ⚖️ **Optimized Balances**: Automatically calculates "Who owes whom" to simplify complex group debts.
-- 💬 **Real-Time Chat**: Live, room-based websocket chat for discussing individual expenses.
-- 💳 **Settlements**: Record partial or full payments to instantly update group balances.
-- 🎨 **Polished UI/UX**: A dark-mode ready, fully responsive interface inspired by modern SaaS platforms (Vercel, Linear, Stripe).
+## 2. Features
+- **Authentication**: Secure JWT-based authentication via HTTP-only cookies.
+- **Group Management**: Create groups, invite members via email, and assign Admin/Member roles.
+- **Smart Expense Splitting**: Supports Equal, Exact Amount, Percentage, and Fractional Share splitting algorithms, with perfect cent-level precision.
+- **Optimized Balances**: Automatically calculates "Who owes whom" to simplify complex group debts.
+- **Real-Time Chat**: Live, room-based websocket chat for discussing individual expenses.
+- **Settlements**: Record partial or full payments to instantly update group balances.
+- **Polished UI/UX**: A dark-mode ready, fully responsive interface inspired by modern SaaS platforms (Vercel, Linear, Stripe).
 
-## 🔑 3. Demo Credentials
+## 3. Demo Credentials
 
 If you want to test the application quickly without registering, use the following pre-seeded demo accounts:
 
@@ -40,13 +40,13 @@ If you want to test the application quickly without registering, use the followi
 | **Bob Johnson** | `bob@demo.com` | `password123` |
 | **Charlie Davis** | `charlie@demo.com` | `password123` |
 
-## 📸 4. Screenshots
+## 4. Screenshots
 
 | Dashboard | Group Details | Expense Splitting |
 | :---: | :---: | :---: |
 | <img src="https://github.com/user-attachments/assets/79692ed7-d3ac-4be5-b480-23d262859b21" alt="Dashboard" style="border-radius: 8px;" /> | <img src="https://github.com/user-attachments/assets/e4535c95-abc4-495a-b2dd-0ae2069ba0c7" alt="Group Details" style="border-radius: 8px;" /> | <img src="https://github.com/user-attachments/assets/ca834469-2cf3-420f-8140-daf8bd822bd9" alt="Expense Splitting" style="border-radius: 8px;" /> |
 
-## 🛠️ 4. Tech Stack
+## 5. Tech Stack
 
 ### Frontend
 - **Framework**: React 18, React Router DOM
@@ -67,13 +67,13 @@ If you want to test the application quickly without registering, use the followi
 - **Testing**: Vitest (Unit & Integration Testing)
 - **Linting**: ESLint, Prettier
 
-## 🏗️ 5. Architecture
+## 6. Architecture
 FairShare is structured as a monolithic repository using npm workspaces.
 - **Frontend Layer**: A Single Page Application (SPA) communicating via RESTful API calls and Socket.io events.
 - **Backend Layer**: A modular Express application following the Controller-Service-Route pattern.
 - **Data Layer**: Prisma ORM manages PostgreSQL, ensuring strict foreign key constraints and type safety.
 
-## 🗄️ 6. Database Schema Summary
+## 7. Database Schema Summary
 The application is backed by a robust relational schema:
 - `User`: Authentication and profile details.
 - `Group` & `GroupMember`: Many-to-many relationship managing access control and roles.
@@ -83,7 +83,7 @@ The application is backed by a robust relational schema:
 - `Message`: Real-time chat history linked to an Expense.
 - `Settlement`: Tracks payments made between users to reduce debt.
 
-## 🔌 7. API Overview
+## 8. API Overview
 All API endpoints are versioned (`/api/v1`) and secured using JWT middleware:
 - `/auth`: Registration, login, logout, and session validation.
 - `/users`: Fetch user profiles and global balance summaries.
@@ -93,7 +93,7 @@ All API endpoints are versioned (`/api/v1`) and secured using JWT middleware:
 - `/settlements`: Recording payments and verifying against over-settlement.
 - `/balances`: Dynamically aggregating debts from Expenses and Settlements.
 
-## 🚀 8. Local Setup
+## 9. Local Setup
 Ensure you have Node.js (v18+) and PostgreSQL installed.
 
 ```bash
@@ -109,7 +109,7 @@ cd backend
 npx prisma migrate dev
 ```
 
-## ⚙️ 9. Environment Variables
+## 10. Environment Variables
 Create a `.env` file in the `backend` directory:
 ```env
 PORT=3001
@@ -130,7 +130,7 @@ Start the application:
 npm run dev
 ```
 
-## 🌐 10. Deployment Steps
+## 11. Deployment Steps
 1. **Database**: Provision a PostgreSQL database (e.g., Neon, Supabase) and obtain the connection string.
 2. **Backend (Render)**:
    - Connect the repository to a Render Web Service.
@@ -142,10 +142,10 @@ npm run dev
    - Set Root Directory to `frontend`.
    - Add the `VITE_API_URL` environment variable pointing to the deployed backend URL.
 
-## 🤖 11. AI Collaboration Process
+## 12. AI Collaboration Process
 This project was built entirely using an advanced Agentic AI coding assistant (Google DeepMind's Antigravity). The development process adhered to strict planning workflows, continuous unit testing, and sequential execution. The AI acted as the lead engineer, while the user provided architectural direction, design inspiration, and PR approvals.
 
-## 🔮 12. Future Improvements
+## 13. Future Improvements
 - **Push Notifications**: Integrate web push notifications for new expenses and chat messages.
 - **Activity Feed**: Add a global audit log showing recent group activities.
 - **Multiple Currencies**: Support conversion and splitting across international currencies.
