@@ -20,8 +20,29 @@ export const createExpense = async (groupId, createdById, data) => {
       }
     });
 
-    // 2. Insert Participants
-    const participantData = participants.map((p, index) => ({
+    // 2. Fetch Members & Filter Participants
+    const groupMembers = await tx.groupMember.findMany({ where: { groupId } });
+    const expDate = expenseDate ? new Date(expenseDate) : new Date();
+    
+    // Only keep participants who were active on the expense date
+    const activeParticipants = participants.filter(p => {
+      const member = groupMembers.find(m => m.userId === p.userId);
+      if (!member) return false;
+      const joinedAt = new Date(member.joinedAt);
+      if (joinedAt > expDate) return false;
+      if (member.leftAt) {
+        const leftAt = new Date(member.leftAt);
+        if (leftAt < expDate) return false;
+      }
+      return true;
+    });
+
+    if (activeParticipants.length === 0) {
+      throw new Error('No active members available on the specified expense date to split this expense');
+    }
+
+    // 3. Insert Participants
+    const participantData = activeParticipants.map((p, index) => ({
       expenseId: expense.id,
       userId: p.userId,
       splitValue: p.value !== undefined ? p.value : null,
@@ -34,13 +55,13 @@ export const createExpense = async (groupId, createdById, data) => {
     const calculatedSplits = calculateExpenseSplits(
       Number(amount),
       splitType,
-      participants.map(p => ({
+      activeParticipants.map(p => ({
         userId: p.userId,
         value: p.value !== undefined ? Number(p.value) : undefined
       }))
     );
 
-    // 4. Insert Splits
+    // 5. Insert Splits
     const splitData = calculatedSplits.map(split => ({
       expenseId: expense.id,
       userId: split.userId,
@@ -138,8 +159,29 @@ export const updateExpense = async (expenseId, data) => {
       }
     });
 
-    // 3. Insert new participants
-    const participantData = participants.map((p, index) => ({
+    // 3. Fetch Members & Filter Participants
+    const groupMembers = await tx.groupMember.findMany({ where: { groupId: currentExpense.groupId } });
+    const expDate = data.expenseDate ? new Date(data.expenseDate) : currentExpense.expenseDate;
+    
+    // Only keep participants who were active on the expense date
+    const activeParticipants = participants.filter(p => {
+      const member = groupMembers.find(m => m.userId === p.userId);
+      if (!member) return false;
+      const joinedAt = new Date(member.joinedAt);
+      if (joinedAt > expDate) return false;
+      if (member.leftAt) {
+        const leftAt = new Date(member.leftAt);
+        if (leftAt < expDate) return false;
+      }
+      return true;
+    });
+
+    if (activeParticipants.length === 0) {
+      throw new Error('No active members available on the specified expense date to split this expense');
+    }
+
+    // 4. Insert new participants
+    const participantData = activeParticipants.map((p, index) => ({
       expenseId,
       userId: p.userId,
       splitValue: p.value !== undefined ? p.value : null,
@@ -147,17 +189,17 @@ export const updateExpense = async (expenseId, data) => {
     }));
     await tx.expenseParticipant.createMany({ data: participantData });
 
-    // 4. Calculate new splits
+    // 5. Calculate new splits
     const calculatedSplits = calculateExpenseSplits(
       Number(amount),
       splitType,
-      participants.map(p => ({
+      activeParticipants.map(p => ({
         userId: p.userId,
         value: p.value !== undefined ? Number(p.value) : undefined
       }))
     );
 
-    // 5. Insert new splits
+    // 6. Insert new splits
     const splitData = calculatedSplits.map(split => ({
       expenseId,
       userId: split.userId,

@@ -14,6 +14,7 @@ router.patch('/:id', requireGroupAdmin, groupsController.updateGroup);
 router.delete('/:id', requireGroupAdmin, groupsController.archiveGroup);
 
 router.post('/:id/members', requireGroupAdmin, groupsController.addMember);
+router.patch('/:id/members/:userId', requireGroupAdmin, groupsController.updateMember);
 router.delete('/:id/members/:userId', requireGroupAdmin, groupsController.removeMember);
 router.post('/:id/leave', requireGroupMember, groupsController.leaveGroup);
 router.patch('/:id/admin', requireGroupAdmin, groupsController.transferAdmin);

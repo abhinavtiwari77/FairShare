@@ -1,17 +1,33 @@
 import prisma from '../lib/prisma.js';
 
-export const createGroup = async (userId, { name, description }) => {
+export const createGroup = async (userId, { name, description, members }) => {
   return prisma.$transaction(async (tx) => {
+    const initialMembers = [
+      {
+        userId,
+        role: 'ADMIN'
+      }
+    ];
+
+    if (members && members.length > 0) {
+      members.forEach(m => {
+        if (m.userId !== userId) {
+          initialMembers.push({
+            userId: m.userId,
+            role: 'MEMBER',
+            joinedAt: m.joinedAt ? new Date(m.joinedAt) : new Date()
+          });
+        }
+      });
+    }
+
     const group = await tx.group.create({
       data: {
         name,
         description,
         createdById: userId,
         members: {
-          create: {
-            userId,
-            role: 'ADMIN'
-          }
+          create: initialMembers
         }
       }
     });
@@ -68,7 +84,7 @@ export const archiveGroup = async (groupId) => {
   });
 };
 
-export const addMember = async (groupId, targetUserId) => {
+export const addMember = async (groupId, targetUserId, joinedAt) => {
   const existing = await prisma.groupMember.findUnique({
     where: { groupId_userId: { groupId, userId: targetUserId } }
   });
@@ -81,7 +97,8 @@ export const addMember = async (groupId, targetUserId) => {
     data: {
       groupId,
       userId: targetUserId,
-      role: 'MEMBER'
+      role: 'MEMBER',
+      joinedAt: joinedAt ? new Date(joinedAt) : new Date(),
     },
     include: {
       user: {
@@ -94,6 +111,32 @@ export const addMember = async (groupId, targetUserId) => {
 export const removeMember = async (groupId, targetUserId) => {
   return prisma.groupMember.delete({
     where: { groupId_userId: { groupId, userId: targetUserId } }
+  });
+};
+
+export const updateMember = async (groupId, targetUserId, { joinedAt, leftAt }) => {
+  const membership = await prisma.groupMember.findUnique({
+    where: { groupId_userId: { groupId, userId: targetUserId } }
+  });
+
+  if (!membership) {
+    throw new Error('Target user is not a member of this group');
+  }
+
+  const dataToUpdate = {};
+  if (joinedAt !== undefined) dataToUpdate.joinedAt = new Date(joinedAt);
+  if (leftAt !== undefined) {
+    dataToUpdate.leftAt = leftAt === null ? null : new Date(leftAt);
+  }
+
+  return prisma.groupMember.update({
+    where: { groupId_userId: { groupId, userId: targetUserId } },
+    data: dataToUpdate,
+    include: {
+      user: {
+        select: { id: true, fullName: true, email: true, avatarUrl: true }
+      }
+    }
   });
 };
 

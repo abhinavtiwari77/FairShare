@@ -10,6 +10,8 @@ import GroupBalances from '../components/balances/GroupBalances';
 import LedgerTrace from '../components/balances/LedgerTrace';
 import SettlementList from '../components/settlements/SettlementList';
 import RecordSettlementModal from '../components/settlements/RecordSettlementModal';
+import EditMemberModal from '../components/groups/EditMemberModal';
+import { format } from 'date-fns';
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/Tabs';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/Card';
@@ -25,9 +27,11 @@ export default function GroupDetails() {
   
   const [showExpenseModal, setShowExpenseModal] = useState(false);
   const [showSettlementModal, setShowSettlementModal] = useState(false);
+  const [editingMember, setEditingMember] = useState(null);
   
   const [searchEmail, setSearchEmail] = useState('');
   const [searchResult, setSearchResult] = useState(null);
+  const [newMemberJoinedAt, setNewMemberJoinedAt] = useState(new Date().toISOString().split('T')[0]);
 
   const { data, isLoading, isError, error } = useQuery({
     queryKey: ['group', groupId],
@@ -39,10 +43,11 @@ export default function GroupDetails() {
   });
 
   const addMemberMutation = useMutation({
-    mutationFn: async (userId) => api.post(`/api/v1/groups/${groupId}/members`, { userId }),
+    mutationFn: async ({ userId, joinedAt }) => api.post(`/api/v1/groups/${groupId}/members`, { userId, joinedAt }),
     onSuccess: () => {
       setSearchEmail('');
       setSearchResult(null);
+      setNewMemberJoinedAt(new Date().toISOString().split('T')[0]);
       queryClient.invalidateQueries({ queryKey: ['group', groupId] });
     },
     onError: (err) => alert(err.response?.data?.error || 'Failed to add member'),
@@ -91,7 +96,10 @@ export default function GroupDetails() {
 
   const handleAddMember = () => {
     if (!searchResult) return;
-    addMemberMutation.mutate(searchResult.id);
+    addMemberMutation.mutate({ 
+      userId: searchResult.id, 
+      joinedAt: new Date(newMemberJoinedAt).toISOString() 
+    });
   };
 
   const handleRemoveMember = (userId) => {
@@ -228,25 +236,47 @@ export default function GroupDetails() {
           <div className="space-y-6">
             <Card>
               <CardHeader>
-                <CardTitle>Members</CardTitle>
+                <CardTitle>Members Timeline</CardTitle>
                 <CardDescription>People in this group</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <ul className="divide-y divide-border -mx-6 px-6">
                   {members.map(m => (
-                    <li key={m.id} className="flex items-center justify-between py-3">
-                      <div>
-                        <p className="font-medium text-sm">{m.user.fullName} {m.userId === user.id && <span className="text-muted-foreground font-normal">(You)</span>}</p>
-                        <p className="text-xs text-muted-foreground">{m.user.email} · {m.role}</p>
-                      </div>
-                      {isAdmin && m.userId !== user.id && (
-                        <div className="flex gap-2">
-                          {m.role !== 'ADMIN' && (
-                            <Button variant="ghost" size="sm" className="h-8 px-2 text-xs" onClick={() => handleTransferAdmin(m.userId)}>Admin</Button>
-                          )}
-                          <Button variant="ghost" size="sm" className="h-8 px-2 text-xs text-destructive hover:text-destructive" onClick={() => handleRemoveMember(m.userId)}>Remove</Button>
+                    <li key={m.id} className="flex flex-col py-3">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium text-sm">{m.user.fullName} {m.userId === user.id && <span className="text-muted-foreground font-normal">(You)</span>}</p>
+                          <p className="text-xs text-muted-foreground">{m.user.email} · {m.role}</p>
                         </div>
-                      )}
+                        {isAdmin && (
+                          <div className="flex gap-2">
+                            <Button variant="ghost" size="sm" className="h-8 px-2 text-xs" onClick={() => setEditingMember(m)}>Edit</Button>
+                            {m.userId !== user.id && m.role !== 'ADMIN' && (
+                              <Button variant="ghost" size="sm" className="h-8 px-2 text-xs" onClick={() => handleTransferAdmin(m.userId)}>Admin</Button>
+                            )}
+                            {m.userId !== user.id && (
+                              <Button variant="ghost" size="sm" className="h-8 px-2 text-xs text-destructive hover:text-destructive" onClick={() => handleRemoveMember(m.userId)}>Remove</Button>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      
+                      <div className="mt-2 text-xs text-muted-foreground grid grid-cols-[60px_1fr] gap-x-2">
+                        <span className="font-medium">Joined:</span>
+                        <span>{format(new Date(m.joinedAt), 'dd-MMM-yyyy')}</span>
+                        
+                        {m.leftAt && (
+                          <>
+                            <span className="font-medium">Left:</span>
+                            <span>{format(new Date(m.leftAt), 'dd-MMM-yyyy')}</span>
+                          </>
+                        )}
+                        
+                        <span className="font-medium">Status:</span>
+                        <span className={m.leftAt ? "text-destructive font-medium" : "text-positive font-medium"}>
+                          {m.leftAt ? "Left" : "Active"}
+                        </span>
+                      </div>
                     </li>
                   ))}
                 </ul>
@@ -269,14 +299,27 @@ export default function GroupDetails() {
                     </form>
 
                     {searchResult && (
-                      <div className="flex items-center justify-between rounded-md border border-positive/30 bg-positive/10 p-3">
+                      <div className="flex flex-col gap-3 rounded-md border border-positive/30 bg-positive/10 p-3">
                         <div className="truncate pr-2">
                           <p className="text-sm font-medium truncate">{searchResult.fullName}</p>
                           <p className="text-xs text-muted-foreground truncate">{searchResult.email}</p>
                         </div>
-                        <Button size="sm" onClick={handleAddMember} className="bg-positive text-positive-foreground hover:bg-positive/90">
-                          <UserPlus className="w-3 h-3 mr-1" /> Add
-                        </Button>
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2">
+                            <Label htmlFor="newJoinedAt" className="text-xs">Joined:</Label>
+                            <Input
+                              id="newJoinedAt"
+                              type="date"
+                              value={newMemberJoinedAt}
+                              onChange={(e) => setNewMemberJoinedAt(e.target.value)}
+                              className="h-7 text-xs w-32 px-2"
+                              required
+                            />
+                          </div>
+                          <Button size="sm" onClick={handleAddMember} className="h-7 bg-positive text-positive-foreground hover:bg-positive/90">
+                            <UserPlus className="w-3 h-3 mr-1" /> Add
+                          </Button>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -311,6 +354,14 @@ export default function GroupDetails() {
           groupId={groupId}
           onClose={() => setShowSettlementModal(false)}
           onSettlementCreated={() => {}}
+        />
+      )}
+
+      {editingMember && (
+        <EditMemberModal
+          groupId={groupId}
+          member={editingMember}
+          onClose={() => setEditingMember(null)}
         />
       )}
     </div>
