@@ -180,9 +180,9 @@ export default function ExpenseDetails() {
                             </div>
                           </div>
                           <div className="text-right">
-                            <p className="font-semibold text-sm">Owes ${Number(split.amountOwed).toFixed(2)}</p>
+                            <p className="font-semibold text-sm">Owes ₹{Number(split.amountOwed).toFixed(2)}</p>
                             {isPayer && (
-                              <p className="text-[10px] text-positive font-bold uppercase mt-0.5 tracking-wider">Paid ${Number(expense.amount).toFixed(2)}</p>
+                              <p className="text-[10px] text-positive font-bold uppercase mt-0.5 tracking-wider">Paid ₹{Number(expense.amount).toFixed(2)}</p>
                             )}
                           </div>
                         </div>

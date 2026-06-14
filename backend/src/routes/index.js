@@ -22,6 +22,6 @@ router.use('/groups/:groupId/settlements', settlementRoutes)
 router.use('/users/me/balances', userBalanceRoutes)
 router.use('/expenses', globalExpenseRoutes)
 router.use('/expenses/:expenseId/messages', messageRoutes)
-router.use('/groups', importRoutes)
+router.use('/groups/:groupId/import', importRoutes)
 
 export default router

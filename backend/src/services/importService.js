@@ -1,6 +1,6 @@
 import fs from 'fs';
 import csv from 'csv-parser';
-import { prisma } from '../lib/prisma.js';
+import prisma from '../lib/prisma.js';
 
 export const processCsvUpload = async (groupId, userId, file) => {
   const job = await prisma.importJob.create({

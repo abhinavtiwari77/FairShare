@@ -7,9 +7,9 @@ const router = Router({ mergeParams: true });
 const upload = multer({ dest: 'uploads/' });
 
 // Group context routes for importing
-router.post('/:groupId/import', authenticate, upload.single('file'), importController.uploadCsv);
-router.get('/:groupId/import/:jobId', authenticate, importController.getImportJob);
-router.post('/:groupId/import/:jobId/issues/:issueId/resolve', authenticate, importController.resolveIssue);
-router.post('/:groupId/import/:jobId/finalize', authenticate, importController.finalizeImport);
+router.post('/', authenticate, upload.single('file'), importController.uploadCsv);
+router.get('/:jobId', authenticate, importController.getImportJob);
+router.post('/:jobId/issues/:issueId/resolve', authenticate, importController.resolveIssue);
+router.post('/:jobId/finalize', authenticate, importController.finalizeImport);
 
 export default router;

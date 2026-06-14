@@ -1,4 +1,4 @@
-import { prisma } from '../lib/prisma.js';
+import prisma from '../lib/prisma.js';
 import * as importService from '../services/importService.js';
 import fs from 'fs';
 
