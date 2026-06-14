@@ -62,8 +62,20 @@ const analyzeRows = async (groupId, jobId, rows) => {
     }
 
     // 5. Invalid Date
-    const parsedDate = new Date(dateStr);
-    if (isNaN(parsedDate.getTime()) || !dateStr.includes('-')) {
+    let parsedDate;
+    if (dateStr && dateStr.includes('-')) {
+      const parts = dateStr.split('-');
+      if (parts.length === 3 && parts[2].length === 4) {
+        // DD-MM-YYYY -> YYYY-MM-DD
+        parsedDate = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+      } else {
+        parsedDate = new Date(dateStr);
+      }
+    } else {
+      parsedDate = new Date('invalid');
+    }
+
+    if (isNaN(parsedDate.getTime())) {
       issues.push({ type: 'INVALID_DATE', severity: 'ERROR', msg: `Invalid date format: ${dateStr}` });
     }
 
@@ -223,7 +235,17 @@ export const finalizeImport = async (groupId, jobId) => {
     // ... parsing logic to insert into DB
     try {
       const amount = parseFloat(finalData.amount?.replace(/,/g, ''));
-      const date = new Date(finalData.date);
+      let date;
+      if (finalData.date && finalData.date.includes('-')) {
+        const parts = finalData.date.split('-');
+        if (parts.length === 3 && parts[2].length === 4) {
+          date = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`);
+        } else {
+          date = new Date(finalData.date);
+        }
+      } else {
+        date = new Date();
+      }
 
       // Find payer
       const groupMembers = await prisma.groupMember.findMany({ where: { groupId }, include: { user: true } });
