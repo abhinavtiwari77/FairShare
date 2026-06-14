@@ -61,11 +61,11 @@ If you want to test the application quickly without registering, use the followi
 
 | Group Details | Balances & Ledger Trace |
 | :---: | :---: |
-| <img src="./assets/1-group-details.png" alt="Group Details" style="border-radius: 8px;" /> | <img src="./assets/2-ledger-trace.png" alt="Balances and Ledger" style="border-radius: 8px;" /> |
+| <img width="800" alt="Group Details" src="https://github.com/user-attachments/assets/c1d375b9-aced-443a-acf1-9b5d05066fbc" /> | <img width="800" alt="Balances & Ledger Trace" src="https://github.com/user-attachments/assets/cbb1929f-d7fe-4f83-97a7-6238ba45d8e9" /> |
 
 | CSV Import Modal | Anomaly Review Dashboard |
 | :---: | :---: |
-| <img src="./assets/3-csv-upload.png" alt="Upload CSV" style="border-radius: 8px;" /> | <img src="./assets/4-anomaly-review.png" alt="Review Anomalies" style="border-radius: 8px;" /> |
+| <img width="800" alt="CSV Import Modal" src="https://github.com/user-attachments/assets/69e716a5-a0c5-4705-88e5-e565d94d1eff" /> | <img width="800" alt="Anomaly Review Dashboard" src="https://github.com/user-attachments/assets/83a38d81-914a-42f4-87ba-922eae7b87de" /> |
 
 ## 5. Tech Stack
 
