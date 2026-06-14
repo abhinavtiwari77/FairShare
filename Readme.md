@@ -40,9 +40,12 @@ If you want to test the application quickly without registering, use the followi
 
 | User | Email | Password |
 | :--- | :--- | :--- |
-| **Alice Smith** | `alice@demo.com` | `password123` |
-| **Bob Johnson** | `bob@demo.com` | `password123` |
-| **Charlie Davis** | `charlie@demo.com` | `password123` |
+| **Aisha** | `aisha@demo.com` | `password123` |
+| **Rohan** | `rohan@demo.com` | `password123` |
+| **Priya** | `priya@demo.com` | `password123` |
+| **Meera** | `meera@demo.com` | `password123` |
+| **Dev** | `dev@demo.com` | `password123` |
+| **Sam** | `sam@demo.com` | `password123` |
 
 ## 4. Screenshots
 
