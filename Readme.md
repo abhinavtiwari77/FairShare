@@ -158,10 +158,12 @@ npm run dev
    - Set Build Command: `cd backend && npm install && npx prisma generate`
    - Set Start Command: `cd backend && npm start`
    - Add all backend Environment Variables (ensure `NODE_ENV=production`).
-3. **Frontend (Vercel)**:
-   - Connect the repository to Vercel.
-   - Set Root Directory to `frontend`.
+3. **Frontend (Render)**:
+   - Connect the repository to a Render Static Site.
+   - Set Build Command: `npm install && npm run build -w frontend`
+   - Set Publish Directory: `frontend/dist`
    - Add the `VITE_API_URL` environment variable pointing to the deployed backend URL.
+   - Under Redirects/Rewrites, add a rule with Source `/*`, Destination `/index.html`, and Action `Rewrite`.
 
 ## 12. AI Collaboration Process
 This project was built entirely using an advanced Agentic AI coding assistant (Google DeepMind's Antigravity). The development process adhered to strict planning workflows, continuous unit testing, and sequential execution. The AI acted as the lead engineer, while the user provided architectural direction, design inspiration, and PR approvals.
