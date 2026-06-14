@@ -11,7 +11,6 @@ import LedgerTrace from '../components/balances/LedgerTrace';
 import SettlementList from '../components/settlements/SettlementList';
 import RecordSettlementModal from '../components/settlements/RecordSettlementModal';
 import EditMemberModal from '../components/groups/EditMemberModal';
-import { format } from 'date-fns';
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../components/ui/Tabs';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '../components/ui/Card';
@@ -263,12 +262,12 @@ export default function GroupDetails() {
                       
                       <div className="mt-2 text-xs text-muted-foreground grid grid-cols-[60px_1fr] gap-x-2">
                         <span className="font-medium">Joined:</span>
-                        <span>{format(new Date(m.joinedAt), 'dd-MMM-yyyy')}</span>
+                        <span>{new Date(m.joinedAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, '-')}</span>
                         
                         {m.leftAt && (
                           <>
                             <span className="font-medium">Left:</span>
-                            <span>{format(new Date(m.leftAt), 'dd-MMM-yyyy')}</span>
+                            <span>{new Date(m.leftAt).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).replace(/ /g, '-')}</span>
                           </>
                         )}
                         

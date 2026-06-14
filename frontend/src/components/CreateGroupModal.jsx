@@ -103,6 +103,7 @@ export default function CreateGroupModal({ onClose, onCreated }) {
               />
             </div>
           </div>
+          </div>
           
           <div className="px-4 pb-4">
             <h4 className="text-sm font-semibold mb-3">Add Members (Optional)</h4>
