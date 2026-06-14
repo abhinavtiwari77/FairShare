@@ -77,10 +77,27 @@ export const finalizeImport = async (req, res, next) => {
   try {
     const { groupId, jobId } = req.params;
 
-    // Call service to write to Expenses and Settlements
+    // Fetch all issues to build the report before finalizing
+    const issues = await prisma.importIssue.findMany({
+      where: { importJobId: jobId },
+      orderBy: { rowNumber: 'asc' }
+    });
+
     const result = await importService.finalizeImport(groupId, jobId);
 
-    res.json(result);
+    // Build Import Report text
+    let reportText = `Import Report for Job ${jobId}\n`;
+    reportText += `Generated At: ${new Date().toISOString()}\n`;
+    reportText += `=================================================\n\n`;
+
+    issues.forEach(issue => {
+      reportText += `Row ${issue.rowNumber} | Severity: ${issue.severity} | Type: ${issue.issueType}\n`;
+      reportText += `Message: ${issue.message}\n`;
+      reportText += `Action Taken: ${issue.userAction}\n`;
+      reportText += `-------------------------------------------------\n`;
+    });
+
+    res.json({ ...result, reportText });
   } catch (error) {
     next(error);
   }

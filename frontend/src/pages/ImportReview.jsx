@@ -69,8 +69,20 @@ const ImportReview = () => {
 
   const finalizeImport = async () => {
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/groups/${groupId}/import/${job.id}/finalize`, {}, { withCredentials: true });
-      alert('Import completed successfully!');
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/api/v1/groups/${groupId}/import/${job.id}/finalize`, {}, { withCredentials: true });
+      
+      // Download Import Report
+      if (res.data.reportText) {
+        const element = document.createElement("a");
+        const fileData = new Blob([res.data.reportText], {type: 'text/plain'});
+        element.href = URL.createObjectURL(fileData);
+        element.download = `import_report_${job.id}.txt`;
+        document.body.appendChild(element); // Required for this to work in FireFox
+        element.click();
+        document.body.removeChild(element);
+      }
+
+      alert('Import completed successfully! Report downloaded.');
       navigate(`/groups/${groupId}`);
     } catch (error) {
       console.error(error);
