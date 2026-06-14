@@ -59,9 +59,13 @@ If you want to test the application quickly without registering, use the followi
 
 ## 4. Screenshots
 
-| Dashboard | Group Details | Expense Splitting |
-| :---: | :---: | :---: |
-| <img src="https://github.com/user-attachments/assets/79692ed7-d3ac-4be5-b480-23d262859b21" alt="Dashboard" style="border-radius: 8px;" /> | <img src="https://github.com/user-attachments/assets/e4535c95-abc4-495a-b2dd-0ae2069ba0c7" alt="Group Details" style="border-radius: 8px;" /> | <img src="https://github.com/user-attachments/assets/ca834469-2cf3-420f-8140-daf8bd822bd9" alt="Expense Splitting" style="border-radius: 8px;" /> |
+| Group Details | Balances & Ledger Trace |
+| :---: | :---: |
+| <img src="./assets/1-group-details.png" alt="Group Details" style="border-radius: 8px;" /> | <img src="./assets/2-ledger-trace.png" alt="Balances and Ledger" style="border-radius: 8px;" /> |
+
+| CSV Import Modal | Anomaly Review Dashboard |
+| :---: | :---: |
+| <img src="./assets/3-csv-upload.png" alt="Upload CSV" style="border-radius: 8px;" /> | <img src="./assets/4-anomaly-review.png" alt="Review Anomalies" style="border-radius: 8px;" /> |
 
 ## 5. Tech Stack
 
