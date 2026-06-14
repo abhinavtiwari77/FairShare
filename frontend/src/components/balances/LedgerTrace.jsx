@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../../lib/api';
 import { useParams } from 'react-router-dom';
 import { Receipt, Banknote, ArrowRight, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
@@ -13,11 +13,10 @@ const LedgerTrace = () => {
   useEffect(() => {
     const fetchLedger = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/v1/groups/${groupId}/balances/ledger`, {
-          withCredentials: true,
+        const res = await api.get(`/api/v1/groups/${groupId}/balances/ledger`, {
           params: { userId: user.id }
         });
-        setLedger(res.data.ledger);
+        setLedger(res.data.ledger || []);
       } catch (err) {
         console.error(err);
       } finally {
