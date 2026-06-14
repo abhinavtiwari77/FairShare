@@ -1,12 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Upload, AlertCircle, CheckCircle2, ChevronRight, XCircle, FileType, Check } from 'lucide-react';
-import { useGroupContext } from '../context/GroupContext';
 import axios from 'axios';
 
 const ImportReview = () => {
   const { groupId } = useParams();
-  const { group } = useGroupContext();
   const navigate = useNavigate();
   
   const [file, setFile] = useState(null);
