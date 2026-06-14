@@ -19,6 +19,11 @@ export default function ExpenseForm({ groupId, members, initialData, onSuccess, 
   const [category, setCategory] = useState(initialData?.category || 'OTHER');
   const [notes, setNotes] = useState(initialData?.notes || '');
   const [splitType, setSplitType] = useState(initialData?.splitType || 'EQUAL');
+  const [expenseDate, setExpenseDate] = useState(
+    initialData?.expenseDate 
+      ? new Date(initialData.expenseDate).toISOString().split('T')[0] 
+      : new Date().toISOString().split('T')[0]
+  );
   
   // Handle both onCancel and onClose for compatibility
   const handleCancel = onCancel || onClose;
@@ -145,6 +150,7 @@ export default function ExpenseForm({ groupId, members, initialData, onSuccess, 
       splitType,
       category,
       notes,
+      expenseDate: new Date(expenseDate).toISOString(),
       participants: activeParticipants.map(p => ({
         userId: p.userId,
         value: splitType !== 'EQUAL' ? Number(p.value) : undefined
@@ -200,6 +206,14 @@ export default function ExpenseForm({ groupId, members, initialData, onSuccess, 
             {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
           </select>
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label>Expense Date</Label>
+        <Input 
+          type="date" required 
+          value={expenseDate} onChange={e => setExpenseDate(e.target.value)} 
+        />
       </div>
 
       <div className="space-y-2">
