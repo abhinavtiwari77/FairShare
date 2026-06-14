@@ -17,18 +17,22 @@ A modern, AI-collaborated full-stack application built to simplify group expense
 ---
 
 ## 1. Project Overview
-FairShare is a complete, production-grade expense-sharing application inspired by tools like Splitwise. It allows users to create groups, log shared expenses, split costs using various algorithms, discuss details in real-time chat, and efficiently settle up debts using an optimized balance-tracking engine.
+FairShare is a complete, production-grade expense-sharing application built to satisfy rigorous shared-expense assignment requirements. It allows users to create groups, log shared expenses, split costs using various algorithms, and efficiently settle up debts. 
 
-This project was built from scratch as part of an intensive software engineering assignment, demonstrating full-stack proficiency, rigorous testing, and advanced AI-assisted development techniques.
+**Key Assignment Features Accomplished:**
+- **Robust CSV Importer**: Ingests `expenses_export.csv` through a staging pipeline. Does not silently guess. Surfaces all 12 deliberate data anomalies (duplicates, missing fields, unknown users, mixed currencies) to an interactive Review Center for explicit user approval.
+- **Strict Membership Time-Tracking**: Tracks exact `joinedAt` and `leftAt` dates to ensure members who joined late (e.g., Sam) or left early (e.g., Meera) are automatically excluded from respective expenses.
+- **Rohan's Ledger Trace**: "No magic numbers." Features a dedicated Ledger API that generates an itemized, chronological receipt of exactly why a user's balance is what it is.
+- **Priya's Currency Support**: Maintains original USD amounts while applying conversion rates for accurate INR-based split mathematics.
 
 ## 2. Features
+- **Data Import Center**: Upload CSVs and resolve anomalies visually.
 - **Authentication**: Secure JWT-based authentication via HTTP-only cookies.
-- **Group Management**: Create groups, invite members via email, and assign Admin/Member roles.
-- **Smart Expense Splitting**: Supports Equal, Exact Amount, Percentage, and Fractional Share splitting algorithms, with perfect cent-level precision.
+- **Group Management**: Manage groups and time-bound member lifecycles.
+- **Smart Expense Splitting**: Supports Equal, Exact Amount, Percentage, and Fractional Share algorithms.
 - **Optimized Balances**: Automatically calculates "Who owes whom" to simplify complex group debts.
+- **Ledger Tracing**: Deep-dive itemized receipts for individual debt paths.
 - **Real-Time Chat**: Live, room-based websocket chat for discussing individual expenses.
-- **Settlements**: Record partial or full payments to instantly update group balances.
-- **Polished UI/UX**: A dark-mode ready, fully responsive interface inspired by modern SaaS platforms (Vercel, Linear, Stripe).
 
 ## 3. Demo Credentials
 

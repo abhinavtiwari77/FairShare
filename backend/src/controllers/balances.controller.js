@@ -110,3 +110,101 @@ export const getUserBalances = async (req, res) => {
     return res.status(500).json({ error: 'Failed to calculate user summary', code: 'INTERNAL_ERROR' });
   }
 };
+
+export const getLedgerTrace = async (req, res) => {
+  try {
+    const groupId = req.params.groupId || req.params.id;
+    const userId = req.query.userId || req.user.id;
+
+    // Fetch all expenses in the group
+    const expenses = await prisma.expense.findMany({
+      where: { groupId, deletedAt: null },
+      include: { splits: true }
+    });
+
+    // Fetch all settlements
+    const settlements = await prisma.settlement.findMany({
+      where: { groupId, deletedAt: null }
+    });
+
+    const ledger = [];
+    let runningBalance = 0; // positive means they are owed, negative means they owe
+
+    // Process expenses where user is involved
+    expenses.forEach(exp => {
+      const amount = Number(exp.amount);
+      const isPayer = exp.paidById === userId;
+      const userSplit = exp.splits.find(s => s.userId === userId);
+      const userOwes = userSplit ? Number(userSplit.amountOwed) : 0;
+
+      if (isPayer || userOwes > 0) {
+        let impact = 0;
+        if (isPayer) {
+          // If I paid, I am owed the amount minus my own split
+          impact += (amount - userOwes);
+        } else if (userOwes > 0) {
+          // If I didn't pay but I have a split, I owe that split
+          impact -= userOwes;
+        }
+
+        if (impact !== 0) {
+          runningBalance += impact;
+          ledger.push({
+            id: exp.id,
+            type: 'EXPENSE',
+            date: exp.expenseDate,
+            title: exp.title,
+            impact,
+            runningBalance,
+            details: isPayer ? `You paid ₹${amount.toFixed(2)}, your share was ₹${userOwes.toFixed(2)}` : `You owe ₹${userOwes.toFixed(2)}`
+          });
+        }
+      }
+    });
+
+    // Process settlements
+    settlements.forEach(settlement => {
+      const amount = Number(settlement.amount);
+      if (settlement.payerId === userId) {
+        // User paid someone -> positive impact on balance (they are owed less / owe less)
+        runningBalance += amount;
+        ledger.push({
+          id: settlement.id,
+          type: 'SETTLEMENT',
+          date: settlement.createdAt,
+          title: 'Settlement Paid',
+          impact: amount,
+          runningBalance,
+          details: `You paid ₹${amount.toFixed(2)}`
+        });
+      } else if (settlement.receiverId === userId) {
+        // User received money -> negative impact on balance
+        runningBalance -= amount;
+        ledger.push({
+          id: settlement.id,
+          type: 'SETTLEMENT',
+          date: settlement.createdAt,
+          title: 'Settlement Received',
+          impact: -amount,
+          runningBalance,
+          details: `You received ₹${amount.toFixed(2)}`
+        });
+      }
+    });
+
+    // Sort ledger by date
+    ledger.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    // Recalculate running balance correctly after sorting
+    let sequentialBalance = 0;
+    ledger.forEach(item => {
+      sequentialBalance += item.impact;
+      item.runningBalance = sequentialBalance;
+    });
+
+    return res.status(200).json({ ledger, finalBalance: sequentialBalance });
+  } catch (error) {
+    console.error('GET LEDGER TRACE ERROR:', error);
+    return res.status(500).json({ error: 'Failed to calculate ledger trace', code: 'INTERNAL_ERROR' });
+  }
+};

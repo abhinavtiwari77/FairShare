@@ -13,6 +13,7 @@ const Dashboard = lazy(() => import('./pages/Dashboard'));
 const GroupDetails = lazy(() => import('./pages/GroupDetails'));
 const ExpenseDetails = lazy(() => import('./pages/ExpenseDetails'));
 const Settings = lazy(() => import('./pages/Settings'));
+const ImportReview = lazy(() => import('./pages/ImportReview'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -60,6 +61,7 @@ function App() {
                 <Route path="/dashboard" element={<Dashboard />} />
                 <Route path="/settings" element={<Settings />} />
                 <Route path="/groups/:groupId" element={<GroupDetails />} />
+                <Route path="/groups/:groupId/import" element={<ImportReview />} />
                 <Route path="/groups/:groupId/expenses/:expenseId" element={<ExpenseDetails />} />
               </Route>
             </Routes>

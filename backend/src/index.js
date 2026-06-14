@@ -5,9 +5,9 @@ import { createApp } from './app.js'
 import cookie from 'cookie'
 import jwt from 'jsonwebtoken'
 import prisma from './lib/prisma.js'
-
 const port = process.env.PORT || 3001
 const app = createApp()
+
 const httpServer = createServer(app)
 
 const io = new Server(httpServer, {

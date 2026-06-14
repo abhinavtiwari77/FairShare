@@ -8,6 +8,7 @@ import balanceRoutes from './balances.routes.js'
 import userBalanceRoutes from './userBalances.routes.js'
 import settlementRoutes from './settlements.routes.js'
 import messageRoutes from './messages.routes.js'
+import importRoutes from './importRoutes.js'
 
 const router = Router()
 
@@ -21,5 +22,6 @@ router.use('/groups/:groupId/settlements', settlementRoutes)
 router.use('/users/me/balances', userBalanceRoutes)
 router.use('/expenses', globalExpenseRoutes)
 router.use('/expenses/:expenseId/messages', messageRoutes)
+router.use('/groups', importRoutes)
 
 export default router

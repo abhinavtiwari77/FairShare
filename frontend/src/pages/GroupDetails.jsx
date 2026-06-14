@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { LogOut, Archive, Search, UserPlus, Receipt, Banknote } from 'lucide-react';
+import { LogOut, Archive, Search, UserPlus, Receipt, Banknote, Upload } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import api from '../lib/api';
 import ExpenseList from '../components/expenses/ExpenseList';
 import ExpenseForm from '../components/expenses/ExpenseForm';
 import GroupBalances from '../components/balances/GroupBalances';
+import LedgerTrace from '../components/balances/LedgerTrace';
 import SettlementList from '../components/settlements/SettlementList';
 import RecordSettlementModal from '../components/settlements/RecordSettlementModal';
 
@@ -134,10 +135,21 @@ export default function GroupDetails() {
   return (
     <div className="max-w-5xl mx-auto p-4 md:p-8 space-y-8 animate-in fade-in duration-300">
         
-      <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground mb-4">
-        <Link to="/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link>
-        <span className="opacity-50">/</span>
-        <span className="text-foreground">{group.name}</span>
+      <div className="flex justify-between items-center mb-4">
+        <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+          <Link to="/dashboard" className="hover:text-foreground transition-colors">Dashboard</Link>
+          <span className="opacity-50">/</span>
+          <span className="text-foreground">{group.name}</span>
+        </div>
+        <div className="flex gap-2">
+          <Link
+            to={`/groups/${groupId}/import`}
+            className="inline-flex items-center justify-center gap-2 text-sm font-medium transition-colors focus-visible:outline-none disabled:pointer-events-none disabled:opacity-50 border border-input bg-background hover:bg-accent hover:text-accent-foreground h-9 rounded-md px-3"
+          >
+            <Upload className="w-4 h-4" />
+            <span className="hidden sm:inline">Import</span>
+          </Link>
+        </div>
       </div>
 
       {/* Header */}
@@ -193,7 +205,10 @@ export default function GroupDetails() {
                     </Button>
                   </div>
                   
-                  <GroupBalances groupId={groupId} />
+                  <div>
+                    <GroupBalances groupId={groupId} />
+                    <LedgerTrace />
+                  </div>
                   
                   <Card className="mt-6">
                     <CardHeader>
