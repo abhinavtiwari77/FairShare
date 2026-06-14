@@ -43,10 +43,10 @@ export default function Landing() {
           <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background -z-10" />
           <div className="container mx-auto max-w-4xl text-center space-y-8">
             <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-foreground to-muted-foreground">
-              Track shared expenses without the spreadsheets.
+              Robust CSV Expense Importer & Anomaly Detector.
             </h1>
             <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto font-light">
-              Split bills, manage group expenses, track balances, and settle up effortlessly with your friends and roommates.
+              Ingest spreadsheet data, visually resolve deliberate data anomalies, enforce strict membership constraints, and calculate optimized group balances.
             </p>
             <div className="flex items-center justify-center gap-4 pt-4">
               <Link to="/register">
@@ -119,23 +119,23 @@ export default function Landing() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Card className="p-6 border-transparent shadow-none bg-background/60 hover:bg-background transition-colors">
                 <Calculator className="w-10 h-10 text-primary mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Smart Expense Splitting</h3>
-                <p className="text-muted-foreground">Split equally, by exact amounts, percentages, or shares. The engine calculates the cents perfectly every time.</p>
-              </Card>
-              <Card className="p-6 border-transparent shadow-none bg-background/60 hover:bg-background transition-colors">
-                <MessageSquare className="w-10 h-10 text-blue-500 mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Real-Time Expense Chat</h3>
-                <p className="text-muted-foreground">Discuss details and share receipts directly on the expense. Messages sync instantly across all your devices.</p>
-              </Card>
-              <Card className="p-6 border-transparent shadow-none bg-background/60 hover:bg-background transition-colors">
-                <PieChart className="w-10 h-10 text-amber-500 mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Group Balance Tracking</h3>
-                <p className="text-muted-foreground">See an optimized list of exactly who owes whom. Debt simplification means fewer transactions to settle up.</p>
+                <h3 className="text-xl font-semibold mb-2">CSV Data Importer</h3>
+                <p className="text-muted-foreground">Seamlessly ingest structured CSV expense data with strict validation rules and error boundary protection.</p>
               </Card>
               <Card className="p-6 border-transparent shadow-none bg-background/60 hover:bg-background transition-colors">
                 <Zap className="w-10 h-10 text-emerald-500 mb-4" />
-                <h3 className="text-xl font-semibold mb-2">Fast Settlements</h3>
-                <p className="text-muted-foreground">Record payments quickly. Balances update instantly without affecting the historical expense ledger.</p>
+                <h3 className="text-xl font-semibold mb-2">Smart Anomaly Detection</h3>
+                <p className="text-muted-foreground">Automatically identifies duplicate records, missing fields, membership violations, invalid dates, and zero amounts.</p>
+              </Card>
+              <Card className="p-6 border-transparent shadow-none bg-background/60 hover:bg-background transition-colors">
+                <MessageSquare className="w-10 h-10 text-blue-500 mb-4" />
+                <h3 className="text-xl font-semibold mb-2">Interactive Issue Resolution</h3>
+                <p className="text-muted-foreground">Review flagged anomalies in a dedicated dashboard. Accept suggestions, override data, or safely reject invalid rows.</p>
+              </Card>
+              <Card className="p-6 border-transparent shadow-none bg-background/60 hover:bg-background transition-colors">
+                <PieChart className="w-10 h-10 text-amber-500 mb-4" />
+                <h3 className="text-xl font-semibold mb-2">Optimized Balances & Ledger</h3>
+                <p className="text-muted-foreground">Calculate complex multi-party debts with fractional accuracy. Trace every individual's exact balance via the Ledger API.</p>
               </Card>
             </div>
           </div>
@@ -148,23 +148,23 @@ export default function Landing() {
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
               <div className="flex flex-col items-center">
                 <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-lg mb-4">1</div>
-                <h4 className="font-semibold mb-2">Create Group</h4>
-                <p className="text-sm text-muted-foreground">Invite your friends via email.</p>
+                <h4 className="font-semibold mb-2">Upload CSV</h4>
+                <p className="text-sm text-muted-foreground">Import your historical group expenses.</p>
               </div>
               <div className="flex flex-col items-center">
                 <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-lg mb-4">2</div>
-                <h4 className="font-semibold mb-2">Add Expenses</h4>
-                <p className="text-sm text-muted-foreground">Log costs and split them.</p>
+                <h4 className="font-semibold mb-2">Review Anomalies</h4>
+                <p className="text-sm text-muted-foreground">System flags errors and violations.</p>
               </div>
               <div className="flex flex-col items-center">
                 <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-lg mb-4">3</div>
-                <h4 className="font-semibold mb-2">Track Balances</h4>
-                <p className="text-sm text-muted-foreground">See who owes whom instantly.</p>
+                <h4 className="font-semibold mb-2">Resolve Issues</h4>
+                <p className="text-sm text-muted-foreground">Accept, override, or reject rows.</p>
               </div>
               <div className="flex flex-col items-center">
                 <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold text-lg mb-4">4</div>
-                <h4 className="font-semibold mb-2">Settle Up</h4>
-                <p className="text-sm text-muted-foreground">Record payments to clear debts.</p>
+                <h4 className="font-semibold mb-2">Track Balances</h4>
+                <p className="text-sm text-muted-foreground">View calculated debts and ledgers.</p>
               </div>
             </div>
           </div>

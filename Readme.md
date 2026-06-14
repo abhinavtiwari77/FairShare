@@ -2,8 +2,8 @@
   
 # 🥧 FairShare
 
-**Track shared expenses without the spreadsheets.**
-A modern, AI-collaborated full-stack application built to simplify group expenses.
+**Robust CSV Expense Importer & Anomaly Detector.**
+A modern, full-stack application built specifically to satisfy the rigorous data-import assignment requirements.
 
 [![React](https://img.shields.io/badge/React-18-blue.svg?style=for-the-badge&logo=react)](https://reactjs.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-Express-green.svg?style=for-the-badge&logo=nodedotjs)](https://nodejs.org/)
@@ -25,14 +25,24 @@ FairShare is a complete, production-grade expense-sharing application built to s
 - **Rohan's Ledger Trace**: "No magic numbers." Features a dedicated Ledger API that generates an itemized, chronological receipt of exactly why a user's balance is what it is.
 - **Priya's Currency Support**: Maintains original USD amounts while applying conversion rates for accurate INR-based split mathematics.
 
-## 2. Features
-- **Data Import Center**: Upload CSVs and resolve anomalies visually.
+- **Data Import Center**: Upload CSVs and resolve anomalies visually before committing to the database.
+- **12-Point Anomaly Detection**:
+  1. Duplicate exact rows
+  2. Duplicate rows with different amounts
+  3. Negative amounts (converted to refunds)
+  4. Unknown users
+  5. Invalid date formats (e.g. DD-MM-YYYY)
+  6. Settlements logged as expenses
+  7. Currency mixing (USD to INR conversion)
+  8. Missing required fields
+  9. Membership constraint: Date before joined
+  10. Membership constraint: Date after left
+  11. Invalid split sums (e.g. percentages not summing to 100)
+  12. Zero amounts
 - **Authentication**: Secure JWT-based authentication via HTTP-only cookies.
 - **Group Management**: Manage groups and time-bound member lifecycles.
-- **Smart Expense Splitting**: Supports Equal, Exact Amount, Percentage, and Fractional Share algorithms.
-- **Optimized Balances**: Automatically calculates "Who owes whom" to simplify complex group debts.
 - **Ledger Tracing**: Deep-dive itemized receipts for individual debt paths.
-- **Real-Time Chat**: Live, room-based websocket chat for discussing individual expenses.
+- **Optimized Balances**: Automatically calculates "Who owes whom" to simplify complex group debts.
 
 ## 3. Demo Credentials
 
